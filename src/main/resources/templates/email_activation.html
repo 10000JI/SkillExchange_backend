@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>재능 교환소 계정 활성화 인증 메일</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #FC5230;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #fc3210;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src='cid:image' alt="로고 이미지">
+    <h2>안녕하세요, <span th:text="${id}"></span>님</h2>
+    <p>누군가가 새로운 위치에서 회원님의 계정으로 접속을 시도하고 있어요.</p>
+    <p>본인이라면 아래 버튼을 클릭하여 계정을 활성화 해주세요.</p>
+    <a th:href="${jwtLink}">
+        <button type="button">계정 활성화</button>
+    </a>
+</div>
+</body>
+</html>
