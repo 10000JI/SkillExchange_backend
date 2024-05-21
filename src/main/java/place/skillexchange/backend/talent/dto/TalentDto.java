@@ -143,7 +143,11 @@ public class TalentDto {
         /* Entity -> Dto */
         public WriterInfoResponse(User user) {
             this.id = user.getId();
-            this.gender = user.getGender().toString();
+            if (user.getGender() != null) {
+                this.gender = user.getGender().toString();
+            } else {
+                this.gender = null;
+            }
             this.job = user.getJob();
             this.careerSkills = user.getCareerSkills();
             this.preferredSubject = user.getPreferredSubject();
