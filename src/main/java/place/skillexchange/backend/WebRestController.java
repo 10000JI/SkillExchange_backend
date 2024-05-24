@@ -15,8 +15,8 @@ public class WebRestController {
     @GetMapping("/profile")
     public String getProfile() {
         return Arrays.stream(env.getActiveProfiles())
-                .skip(1) // Skip the first profile
-                .findFirst() // Find the first profile after skipping
+                .skip(1) // 첫번째 profile 스킵
+                .findFirst() // 이후 나온 profile 적용
                 .orElse("");
     }
 }
