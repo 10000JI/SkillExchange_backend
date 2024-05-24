@@ -38,19 +38,3 @@ logging:
 #
 #server:
 #  port: 80
-
-#management:
-#  server:
-#    port: 5000
-#  endpoints:
-#    info:
-#      enabled: true
-#    health:
-#      enabled: true
-#    jmx:
-#      exposure:
-#        exclude: "*"
-#    web:
-#      exposure:
-#        include: info, health
-#      base-path: /actuator
