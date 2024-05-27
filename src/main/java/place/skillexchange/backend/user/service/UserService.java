@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import place.skillexchange.backend.user.dto.UserDto;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface UserService {
     public UserDto.ProfileResponse profileUpdate(UserDto.ProfileRequest dto, MultipartFile multipartFile) throws IOException;
@@ -14,4 +15,5 @@ public interface UserService {
 
     public UserDto.ResponseBasic updatePw(UserDto.UpdatePwRequest dto, BindingResult bindingResult) throws MethodArgumentNotValidException;
 
+    public List<UserDto.MyScrapResponse> scrapRead();
 }

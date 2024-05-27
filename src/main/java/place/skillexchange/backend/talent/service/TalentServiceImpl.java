@@ -159,7 +159,7 @@ public class TalentServiceImpl implements TalentService {
     public TalentDto.ResponseBasic scrap(Long talentId) {
         String id = securityUtil.getCurrentMemberUsername();
         User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        if (scrapRepository.findByTalentId(talentId, id) != null) {
+        if (scrapRepository.findByTalentIdAndUserId(talentId, id) != null) {
             throw BoardAleadyScrappedException.EXCEPTION;
         }
         Talent talent = talentRepository.findById(talentId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);

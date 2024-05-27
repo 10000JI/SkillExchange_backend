@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import place.skillexchange.backend.common.util.DayOfWeekUtil;
 import place.skillexchange.backend.file.entity.File;
 import place.skillexchange.backend.file.service.FileServiceImpl;
-import place.skillexchange.backend.notice.dto.NoticeDto;
 import place.skillexchange.backend.talent.dto.TalentDto;
 import place.skillexchange.backend.talent.entity.*;
 import place.skillexchange.backend.talent.repository.PlaceRepository;
@@ -504,7 +503,7 @@ class TalentServiceImplTest {
         // userRepository의 동작을 모의화
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         //scrapRepository의 동작을 모의화
-        when(scrapRepository.findByTalentId(boardId, userId)).thenReturn(null);
+        when(scrapRepository.findByTalentIdAndUserId(boardId, userId)).thenReturn(null);
         //talentRepository의 동작을 모의화
         when(talentRepository.findById(boardId)).thenReturn(Optional.of(talent));
         //scrapRepository의 동작을 모의화
@@ -519,7 +518,7 @@ class TalentServiceImplTest {
         assertThat("스크랩이 완료되었습니다.").isEqualTo(response.getReturnMessage());
 
         verify(userRepository).findById(userId);
-        verify(scrapRepository).findByTalentId(boardId, userId);
+        verify(scrapRepository).findByTalentIdAndUserId(boardId, userId);
         verify(talentRepository).findById(boardId);
         verify(scrapRepository).save(any(TalentScrap.class));
     }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.web.bind.annotation.BindParam;
+import place.skillexchange.backend.talent.entity.Talent;
 import place.skillexchange.backend.user.entity.Authority;
 import place.skillexchange.backend.file.entity.File;
 import place.skillexchange.backend.user.entity.User;
@@ -267,5 +268,24 @@ public class UserDto {
         @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}", message = "8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
         @Schema(title = "사용자 새 비밀번호 확인",description = "사용자 새 비밀번호를 반환합니다.")
         private String newPasswordCheck;
+    }
+
+    /**
+     * 내가 스크랩한 게시물 목록 확인 시 응답 Dto
+     */
+    @Getter
+    public static class MyScrapResponse{
+        private Long id;
+        private String writer;
+        private String title;
+        private String content;
+
+        /* Entity -> Dto */
+        public MyScrapResponse(Talent talent) {
+            this.writer = talent.getWriter().getId();
+            this.id = talent.getId();
+            this.content = talent.getContent();
+            this.title = talent.getTitle();
+        }
     }
 }

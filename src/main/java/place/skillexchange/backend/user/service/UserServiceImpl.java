@@ -7,7 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
+import place.skillexchange.backend.exception.board.BoardNotFoundException;
+import place.skillexchange.backend.exception.user.ScrapNotFoundException;
 import place.skillexchange.backend.file.service.FileServiceImpl;
+import place.skillexchange.backend.talent.entity.TalentScrap;
+import place.skillexchange.backend.talent.repository.TalentRepository;
+import place.skillexchange.backend.talent.repository.TalentScrapRepository;
 import place.skillexchange.backend.user.dto.UserDto;
 import place.skillexchange.backend.file.entity.File;
 import place.skillexchange.backend.user.entity.User;
@@ -17,6 +22,9 @@ import place.skillexchange.backend.common.util.SecurityUtil;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileServiceImpl fileHandler;
+    private final TalentScrapRepository scrapRepository;
+    private final TalentRepository talentRepository;
 
     /**
      * 프로필 수정
@@ -91,5 +101,23 @@ public class UserServiceImpl implements UserService {
         user.changePw(passwordEncoder.encode(dto.getNewPassword()));
 
         return new UserDto.ResponseBasic(200, id+"님의 비밀번호가 변경되었습니다.");
+    }
+
+    /**
+     * 스크랩한 게시물 목록 확인
+     */
+    @Override
+    public List<UserDto.MyScrapResponse> scrapRead() {
+        String id = securityUtil.getCurrentMemberUsername();
+        List<TalentScrap> talentScrapByIdUserId = scrapRepository.findTalentScrapById_UserId(id);
+        List<UserDto.MyScrapResponse> list = new ArrayList<>();
+        for (TalentScrap talentScrap : talentScrapByIdUserId) {
+            UserDto.MyScrapResponse scrap = new UserDto.MyScrapResponse(talentRepository.findById(talentScrap.getId().getTalentId()).orElseThrow(() -> BoardNotFoundException.EXCEPTION));
+            list.add(scrap);
+        }
+        if (list.isEmpty()) {
+            throw ScrapNotFoundException.EXCEPTION;
+        }
+        return list;
     }
 }

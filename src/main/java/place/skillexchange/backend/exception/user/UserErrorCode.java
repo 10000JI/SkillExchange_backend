@@ -31,6 +31,7 @@ public enum UserErrorCode implements BaseErrorCode {
     USER_NOT_FOUND(BAD_REQUEST, "USER_400_1", "사용자 정보를 찾을 수 없습니다."),
     USER_LOGIN_INVALID(BAD_REQUEST, "USER_400_2", "일치하는 로그인 정보가 없습니다."),
     EMAIL_SEND_FAILURE(BAD_REQUEST, "USER_400_3", "이메일 전송 중 문제가 생겼습니다."),
+    SCRAP_NOT_FOUND(BAD_REQUEST,"USER_400_4","스크랩한 게시물이 없습니다."),
     WRITER_LOGGEDINUSER_INVALID(INTERNAL_SERVER, "USER_500_1", "로그인한 회원 정보와 글쓴이가 다릅니다."),
     ACCOUNT_LOGIN_REQUIRED(NOT_FOUND,"USER_404_1", "계정에 다시 로그인 해야 합니다."),
     USER_EMAIL_NOT_FOUND(NOT_FOUND, "USER_404_2", "등록된 계정 중 없는 이메일 주소 입니다.");

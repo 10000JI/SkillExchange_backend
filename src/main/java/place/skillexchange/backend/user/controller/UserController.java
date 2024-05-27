@@ -23,6 +23,7 @@ import place.skillexchange.backend.common.service.MailService;
 import place.skillexchange.backend.user.service.UserService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -130,6 +131,14 @@ public class UserController {
     @PostMapping("/updatePw")
     public UserDto.ResponseBasic updatePw(@Validated @RequestBody UserDto.UpdatePwRequest dto, BindingResult bindingResult) throws MethodArgumentNotValidException {
         return userService.updatePw(dto, bindingResult);
+    }
+
+    /**
+     * 내가 스크랩한 게시물 목록 확인
+     */
+    @GetMapping("/scrap")
+    public List<UserDto.MyScrapResponse> scrapRead() {
+        return userService.scrapRead();
     }
 
     /**
