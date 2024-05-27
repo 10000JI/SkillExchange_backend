@@ -8,8 +8,10 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import place.skillexchange.backend.user.entity.Authority;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -107,14 +109,14 @@ public class JwtService {
         return (id.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    /**
-     * 사용자 이름과 사용자 권한, 사용자 세부 정보를 기반으로 토큰이 유효한지 여부
-     */
-    public boolean isAccessTokenValid(String token, UserDetails userDetails) {
-        final String id = extractUsername(token);
-        final String authorities = extractAuthority(token);
-        return (id.equals(userDetails.getUsername()) && authorities.equals(populateAuthorities(userDetails.getAuthorities())) && !isTokenExpired(token));
-    }
+//    /**
+//     * 사용자 이름과 사용자 권한, 사용자 세부 정보를 기반으로 토큰이 유효한지 여부
+//     */
+//    public boolean isAccessTokenValid(String token, UserDetails userDetails) {
+//        final String id = extractUsername(token);
+//        final String authorities = extractAuthority(token);
+//        return (id.equals(userDetails.getUsername()) && authorities.equals(populateAuthorities(userDetails.getAuthorities())) && !isTokenExpired(token));
+//    } // 만료 여부 확인했는데도 불구하고 굳이 사용자 이름 권한 등을 조회하고 있어 불필요하다고 판단
 
     /**
      * 토큰 만료 여부
@@ -147,5 +149,24 @@ public class JwtService {
         }
         //String value로 "," 를 구분자로 권한들을 구분
         return String.join(",", authoritiesSet);
+    }
+
+    /**
+     * 반대로 권한이 String으로 들어올 때 List<GrantedAuthority>로 반환
+     */
+    public Collection<? extends GrantedAuthority> getAuthorities(String token) {
+        String strAuthorities = extractAuthority(token);
+
+        // 하나의 권한만 있는 경우
+        if (!strAuthorities.contains(",")) {
+            return Collections.singletonList(new SimpleGrantedAuthority(strAuthorities));
+        }
+
+        StringTokenizer st = new StringTokenizer(strAuthorities, ",");
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        while (st.hasMoreTokens()) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(st.nextToken()));
+        }
+        return grantedAuthorities;
     }
 }

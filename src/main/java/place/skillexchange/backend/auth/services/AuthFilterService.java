@@ -114,25 +114,31 @@ public class AuthFilterService extends OncePerRequestFilter {
     }
 
     private void authenticateUser(String jwt, HttpServletRequest request, HttpServletResponse response) {
-        // jwt의 사용자 이름 추출
-        String id = jwtService.extractUsername(jwt);
-
-        //UserDetailsService에서 loadUserByUsername 메서드로 사용자 세부 정보 검색
-        UserDetails userDetails = userDetailsService.loadUserByUsername(id);
-        if (jwtService.isAccessTokenValid(jwt, userDetails)) {
-            //UsernamePasswordAuthenticationToken 대상을 생성 (사용자이름,암호(=null로 설정),권한)
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
-            //authenticationToken의 세부정보 설정
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            //해당 인증 객체를 SecurityContextHolder에 authenticationToken 설정
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            //헤더에 accessToken 유효하므로 동일하게 설정
-            response.setHeader("Authorization", "Bearer " + jwt);
-        }
+//        // jwt의 사용자 이름 추출
+//        String id = jwtService.extractUsername(jwt);
+//        //UserDetailsService에서 loadUserByUsername 메서드로 사용자 세부 정보 검색
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(id);  //db를 방문할 필요가 없음 , jwt 서명만 하면 된다
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                jwtService.extractUsername(jwt),
+                "",
+                true,
+                true,
+                true,
+                true,
+                jwtService.getAuthorities(jwt)
+        );
+        //UsernamePasswordAuthenticationToken 대상을 생성 (사용자이름,암호(=null로 설정),권한)
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+        //authenticationToken의 세부정보 설정
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        //해당 인증 객체를 SecurityContextHolder에 authenticationToken 설정
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        //헤더에 accessToken 유효하므로 동일하게 설정
+        response.setHeader("Authorization", "Bearer " + jwt);
     }
 
     @Override
