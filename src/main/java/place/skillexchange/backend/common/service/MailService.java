@@ -65,10 +65,7 @@ public class MailService {
         helper.addInline("image", new ClassPathResource("static/img/Logo.png"));*/
 
         // 외부 URL에서 이미지 다운로드
-        URL imageUrl = new URL("https://skillexchange.s3.ap-northeast-2.amazonaws.com/images/LOGO.png");
-        byte[] imageBytes = imageUrl.openStream().readAllBytes();
-        ByteArrayResource imageResource = new ByteArrayResource(imageBytes);
-
+        ByteArrayResource imageResource = getByteArrayResource();
         // CID로 이미지 삽입
         helper.addInline("image", imageResource, "image/png");
 
@@ -76,8 +73,7 @@ public class MailService {
         emailSender.send(message);
     }
 
-
-    public void getEmailToFindId(String email) throws MessagingException {
+    public void getEmailToFindId(String email) throws MessagingException, IOException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         //메일 제목 설정
@@ -97,8 +93,13 @@ public class MailService {
         String html = templateEngine.process("email_findId", context);
         helper.setText(html, true);
 
-        //템플릿에 들어가는 이미지 cid로 삽입
-        helper.addInline("image", new ClassPathResource("static/img/Logo.png"));
+       /* //템플릿에 들어가는 이미지 cid로 삽입
+        helper.addInline("image", new ClassPathResource("static/img/Logo.png"));*/
+
+        // 외부 URL에서 이미지 다운로드
+        ByteArrayResource imageResource = getByteArrayResource();
+        // CID로 이미지 삽입
+        helper.addInline("image", imageResource, "image/png");
 
         //메일 보내기
         emailSender.send(message);
@@ -128,10 +129,23 @@ public class MailService {
         String html = templateEngine.process("email_findPw", context);
         helper.setText(html, true);
 
-        //템플릿에 들어가는 이미지 cid로 삽입
-        helper.addInline("image", new ClassPathResource("static/img/Logo.png"));
+        /*//템플릿에 들어가는 이미지 cid로 삽입
+        helper.addInline("image", new ClassPathResource("static/img/Logo.png"));*/
+
+        // 외부 URL에서 이미지 다운로드
+        ByteArrayResource imageResource = getByteArrayResource();
+        // CID로 이미지 삽입
+        helper.addInline("image", imageResource, "image/png");
 
         //메일 보내기
         emailSender.send(message);
+    }
+
+    private static ByteArrayResource getByteArrayResource() throws IOException {
+        // 외부 URL에서 이미지 다운로드
+        URL imageUrl = new URL("https://skillexchange.s3.ap-northeast-2.amazonaws.com/images/LOGO.png");
+        byte[] imageBytes = imageUrl.openStream().readAllBytes();
+        ByteArrayResource imageResource = new ByteArrayResource(imageBytes);
+        return imageResource;
     }
 }

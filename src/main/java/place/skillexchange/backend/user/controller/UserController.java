@@ -78,7 +78,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "로그인 성공")
     })
     @PostMapping("/emailToFindId")
-    public UserDto.ResponseBasic emailToFindId(@Parameter @RequestBody UserDto.EmailRequest dto) throws MessagingException {
+    public UserDto.ResponseBasic emailToFindId(@Parameter @RequestBody UserDto.EmailRequest dto) throws MessagingException, IOException {
         mailService.getEmailToFindId(dto.getEmail());
         return new UserDto.ResponseBasic(200, "이메일이 성공적으로 전송되었습니다.");
     }
