@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -18,6 +19,7 @@ import place.skillexchange.backend.common.util.PasswordGeneratorUtil;
 import place.skillexchange.backend.user.repository.UserRepository;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 
 @Service
@@ -59,8 +61,16 @@ public class MailService {
         String html = templateEngine.process("email_activation", context);
         helper.setText(html, true);
 
-        //템플릿에 들어가는 이미지 cid로 삽입
-        helper.addInline("image", new ClassPathResource("static/img/Logo.png"));
+        /*//템플릿에 들어가는 이미지 cid로 삽입
+        helper.addInline("image", new ClassPathResource("static/img/Logo.png"));*/
+
+        // 외부 URL에서 이미지 다운로드
+        URL imageUrl = new URL("https://skillexchange.s3.ap-northeast-2.amazonaws.com/images/LOGO.png");
+        byte[] imageBytes = imageUrl.openStream().readAllBytes();
+        ByteArrayResource imageResource = new ByteArrayResource(imageBytes);
+
+        // CID로 이미지 삽입
+        helper.addInline("image", imageResource, "image/png");
 
         //메일 보내기
         emailSender.send(message);
