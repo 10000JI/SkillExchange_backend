@@ -37,8 +37,10 @@ public class RefreshTokenService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
-        //user의 refreshToken을 가져와 RefreshToken 객체 추출
-        RefreshToken refreshToken = user.getRefreshToken();
+//        //user의 refreshToken을 가져와 RefreshToken 객체 추출
+//        RefreshToken refreshToken = user.getRefreshToken();
+
+        RefreshToken refreshToken = refreshTokenRepository.findRefreshTokenByUser(user).orElseThrow(() -> RefreshTokenNotFoundException.EXCEPTION);
 
         //refreshToken이 NULL이라면 refreshToken을 새롭게 만든다
         if (refreshToken == null) {
@@ -63,7 +65,7 @@ public class RefreshTokenService {
      * refreshToken 확인
      */
     public RefreshToken verifyRefreshToken(String refreshToken) {
-        RefreshToken refToken = refreshTokenRepository.findByRefreshToken(refreshToken).get();
+        RefreshToken refToken = refreshTokenRepository.findByRefreshToken(refreshToken).get(); //필터영역이기에 aop exception 처리 불가능
 
         //refreshToken의 만료시간이 현재 시간보다 작다면 refreshToken 삭제
         if (refToken.getExpirationTime().compareTo(Date.from(Instant.now())) < 0) {

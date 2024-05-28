@@ -18,12 +18,12 @@ public class TalentScrap {
     @EmbeddedId
     private TalentScrapId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("talentId")
     @JoinColumn(name = "talent_id")
     private Talent talent;

@@ -9,16 +9,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
+import place.skillexchange.backend.exception.user.UserNotFoundException;
 import place.skillexchange.backend.user.entity.RefreshToken;
 import place.skillexchange.backend.user.entity.User;
+import place.skillexchange.backend.user.repository.UserRepository;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Enumeration;
 
 
@@ -32,6 +36,8 @@ public class AuthFilterService extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     private final RefreshTokenService refreshTokenService;
+
+    private final UserRepository userRepository;
 
 
     /**
@@ -81,12 +87,22 @@ public class AuthFilterService extends OncePerRequestFilter {
         if (refreshTokenValue != null) {
             RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(refreshTokenValue);
             if (refreshToken != null) {
-                User user = refreshToken.getUser();
+                //User user = refreshToken.getUser();
+                User user = userRepository.findAllJPQLFetch(refreshToken.getUser().getId()).orElseThrow(() -> UserNotFoundException.EXCEPTION);
                 String accessToken = jwtService.generateAccessToken(user);
                 response.setHeader("Authorization", "Bearer " + accessToken);
 
-                //UserDetailsService에서 loadUserByUsername 메서드로 사용자 세부 정보 검색
-                UserDetails userDetails = userDetailsService.loadUserByUsername(user.getId());
+//                //UserDetailsService에서 loadUserByUsername 메서드로 사용자 세부 정보 검색
+//                UserDetails userDetails = userDetailsService.loadUserByUsername(user.getId());
+                UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                        user.getId(),
+                        "",
+                        true,
+                        true,
+                        true,
+                        true,
+                        user.getAuthorities()
+                );
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

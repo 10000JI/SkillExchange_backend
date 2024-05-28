@@ -176,7 +176,7 @@ public class UserDto {
         public ProfileResponse(User user, File file, int returnCode, String returnMessage) {
             this.id = user.getId();
             this.email = user.getEmail();
-            if (user.getGender  () != null) {
+            if (user.getGender() != null) {
                 this.gender = user.getGender().toString();
             } else {
                 this.gender = null;

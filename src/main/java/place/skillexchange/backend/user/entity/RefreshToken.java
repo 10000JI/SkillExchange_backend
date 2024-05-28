@@ -28,9 +28,9 @@ public class RefreshToken {
     private Date expirationTime;
 
     /**
-     * User와 RefreshToken은 즉시로딩(EARER)
+     * User와 RefreshToken Lazy 로딩
      */
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;
 

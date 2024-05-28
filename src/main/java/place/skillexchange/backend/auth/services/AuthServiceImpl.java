@@ -100,26 +100,19 @@ public class AuthServiceImpl implements AuthService{
 
         //방법1. 동일 id와 email만 계속해서 접근 가능 , 동일 id나 email이 다르면 접근 불가능 / 동일 email이나 id가 다르면 접근 불가능 (유효성검사)
         //active가 0이고, id와 email이 db에 있는 경우엔 if문을 건너뛴다.
-        Optional<User> userOptional = userRepository.findByEmailAndIdAndActiveIsFalse(dto.getEmail(), dto.getId());
+        Optional<User> userOptional = userRepository.findByEmailAndId(dto.getEmail(), dto.getId());
         if (!userOptional.isPresent()) {
-            //id가 db에 있는 경우 if문 실행
-            if(userRepository.findById(dto.getId()) != null) {
-                //id 중복 검증
-                Optional<User> byId = userRepository.findById(dto.getId());
-                if (!byId.isEmpty()) {
-                    bindingResult.rejectValue("id", "user.id.notEqual");
-                    checked = true;
-                }
+            // id가 DB에 있는 경우
+            Optional<User> userById = userRepository.findById(dto.getId());
+            if (userById.isPresent()) {
+                bindingResult.rejectValue("id", "user.id.notEqual");
+                checked = true;
             }
-            //email이 db에 있는 경우 if문 실행
-            if(userRepository.findByEmail(dto.getEmail()) != null) {
-
-                //email 중복 검증
-                Optional<User> userEmail = userRepository.findByEmail(dto.getEmail());
-                if (userEmail.isPresent()) {
-                    bindingResult.rejectValue("email", "user.email.notEqual");
-                    checked = true;
-                }
+            // email이 DB에 있는 경우
+            Optional<User> userByEmail = userRepository.findByEmail(dto.getEmail());
+            if (userByEmail.isPresent()) {
+                bindingResult.rejectValue("email", "user.email.notEqual");
+                checked = true;
             }
         }
 

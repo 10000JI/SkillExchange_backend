@@ -63,7 +63,7 @@ class AuthServiceImplTest {
         BindingResult bindingResult = mock(BindingResult.class);
         User user = User.builder().id(request.getId()).email(request.getEmail()).build();
 
-        given(userRepository.findByEmailAndIdAndActiveIsFalse(request.getEmail(), request.getId())).willReturn(Optional.empty());
+        given(userRepository.findByEmailAndId(request.getEmail(), request.getId())).willReturn(Optional.empty());
         given(userRepository.findById(request.getId())).willReturn(Optional.empty());
         given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.empty());
         given(userRepository.save(any(User.class))).willReturn(user);
@@ -80,7 +80,7 @@ class AuthServiceImplTest {
         //메서드가 특정한 인수로 한 번 호출되었는지를 확인//
 
         // 중복 회원 검증 확인 (active가 0이면서 다음과 같은 id와 email을 가지고 있는 사람이 존재하는지 확인하는 메서드)
-        verify(userRepository).findByEmailAndIdAndActiveIsFalse(eq("test@example.com"), eq("testUser"));
+        verify(userRepository).findByEmailAndId(eq("test@example.com"), eq("testUser"));
 
         // 회원 저장 확인
         verify(userRepository).save(any(User.class));
@@ -108,7 +108,7 @@ class AuthServiceImplTest {
 
         given(authenticationManager.authenticate(any()))
                 .willReturn(new UsernamePasswordAuthenticationToken(user.getId(), request.getPassword()));
-        given(userRepository.findByIdAndActiveIsTrue(request.getId())).willReturn(user);
+//        given(userRepository.findByIdAndActiveIsTrue(request.getId())).willReturn(user);
         given(jwtService.generateAccessToken(user)).willReturn(accessToken);
         given(refreshTokenService.createRefreshToken(request.getId())).willReturn(refreshToken);
 

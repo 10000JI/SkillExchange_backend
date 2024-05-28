@@ -65,16 +65,16 @@ public class User implements UserDetails {
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
 
-    /**
-     * User와 RefreshToken은 1:1 관계
-     */
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private RefreshToken refreshToken;
+//    /**
+//     * User와 RefreshToken은 1:1 관계
+//     */
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+//    private RefreshToken refreshToken;
 
     /**
      * User와 File은 1:1 관계
      */
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private File file;
 
     /**
