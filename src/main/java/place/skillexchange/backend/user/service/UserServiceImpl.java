@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import place.skillexchange.backend.exception.board.BoardNotFoundException;
 import place.skillexchange.backend.exception.user.ScrapNotFoundException;
 import place.skillexchange.backend.file.service.FileServiceImpl;
+import place.skillexchange.backend.talent.entity.Talent;
 import place.skillexchange.backend.talent.entity.TalentScrap;
 import place.skillexchange.backend.talent.repository.TalentRepository;
 import place.skillexchange.backend.talent.repository.TalentScrapRepository;
@@ -24,7 +25,6 @@ import place.skillexchange.backend.common.util.SecurityUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto.ProfileResponse profileUpdate(UserDto.ProfileRequest dto, MultipartFile multipartFile) throws IOException {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findAllJPQLFetch(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         user.changeProfileField(dto);
 
         File file = null;
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto.MyProfileResponse profileRead() {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findAllJPQLFetch(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         return new UserDto.MyProfileResponse(user, 200, id+"님의 프로필");
     }
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto.ResponseBasic updatePw(UserDto.UpdatePwRequest dto, BindingResult bindingResult) throws MethodArgumentNotValidException {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findAllJPQLFetch(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         boolean checked = false;
 
@@ -109,12 +109,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto.MyScrapResponse> scrapRead() {
         String id = securityUtil.getCurrentMemberUsername();
-        List<TalentScrap> talentScrapByIdUserId = scrapRepository.findTalentScrapById_UserId(id);
+        List<Talent> talents = talentRepository.findTalentsByUserIdWithScrap(id);
         List<UserDto.MyScrapResponse> list = new ArrayList<>();
-        for (TalentScrap talentScrap : talentScrapByIdUserId) {
-            UserDto.MyScrapResponse scrap = new UserDto.MyScrapResponse(talentRepository.findById(talentScrap.getId().getTalentId()).orElseThrow(() -> BoardNotFoundException.EXCEPTION));
+        for (Talent talent : talents) {
+            UserDto.MyScrapResponse scrap = new UserDto.MyScrapResponse(talent);
             list.add(scrap);
         }
+
         if (list.isEmpty()) {
             throw ScrapNotFoundException.EXCEPTION;
         }

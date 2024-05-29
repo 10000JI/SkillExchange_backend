@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,8 +21,6 @@ import place.skillexchange.backend.user.entity.User;
 import place.skillexchange.backend.user.repository.UserRepository;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Enumeration;
 
 
 @Service
@@ -88,7 +85,7 @@ public class AuthFilterService extends OncePerRequestFilter {
             RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(refreshTokenValue);
             if (refreshToken != null) {
                 //User user = refreshToken.getUser();
-                User user = userRepository.findAllJPQLFetch(refreshToken.getUser().getId()).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+                User user = userRepository.findById(refreshToken.getUser().getId()).orElseThrow(() -> UserNotFoundException.EXCEPTION);
                 String accessToken = jwtService.generateAccessToken(user);
                 response.setHeader("Authorization", "Bearer " + accessToken);
 

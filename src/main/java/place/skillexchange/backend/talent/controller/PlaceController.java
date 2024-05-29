@@ -15,7 +15,7 @@ public class PlaceController {
     private final PlaceService placeService;
 
     /**
-     * 공지사항 조회
+     * 장소 조회
      */
     @GetMapping("/list")
     public PlaceDto.PlaceReadResponse list() {
