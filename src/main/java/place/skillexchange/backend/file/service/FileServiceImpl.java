@@ -199,7 +199,7 @@ public class FileServiceImpl implements FileService{
                 // 동일하지 않은 이미지 삭제 작업
                 if (!isUrlFoundInImgUrl) {
                     // db에서 이미지 삭제
-                    fileRepository.delete(file);
+                    fileRepository.deleteByFileUrl(fileUrl);
 
                     // S3에서 이미지 삭제
                     // URL url = new URL(fileUrl);
@@ -230,7 +230,6 @@ public class FileServiceImpl implements FileService{
     /**
      * 다중 파일 업로드 (공지사항 수정)
      */
-    @Override
     public List<File> updateNoticeImg(List<String> imgUrl, List<MultipartFile> multipartFiles, Notice notice) throws IOException {
         return updateFileEntities(imgUrl, multipartFiles, notice, fileRepository::findAllByNotice, Notice::updateModDate);
     }
@@ -238,7 +237,6 @@ public class FileServiceImpl implements FileService{
     /**
      * 다중 파일 업로드 (재능교환소 게시물 수정)
      */
-    @Override
     public List<File> updateTalentImg(List<String> imgUrl, List<MultipartFile> multipartFiles, Talent talent) throws IOException {
         return updateFileEntities(imgUrl, multipartFiles, talent, fileRepository::findAllByTalent, Talent::updateModDate);
     }

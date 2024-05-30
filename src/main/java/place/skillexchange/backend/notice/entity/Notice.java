@@ -46,13 +46,13 @@ public class Notice extends BaseEntity {
     /**
      * 이미지와 양방향 매핑
      */
-    @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.PERSIST)
     private List<File> files = new ArrayList<>();
 
     /**
      * 양방향
      */
-    @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.PERSIST)
     private List<Comment> comments = new ArrayList<>();
 
     /**

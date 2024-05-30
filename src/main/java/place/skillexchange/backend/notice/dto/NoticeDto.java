@@ -103,7 +103,7 @@ public class NoticeDto {
         public NoticeReadResponse(Notice notice) {
             this.writer = notice.getWriter().getId();
             if (notice.getWriter() != null && notice.getWriter().getFile() != null) {
-                this.avatar = notice.getWriter().getFile().getFileUrl();
+                this.avatar = notice.getWriter().getFile().getFileUrl(); //조회 한번 더 일어남
             } else {
                 this.avatar = null;
             }

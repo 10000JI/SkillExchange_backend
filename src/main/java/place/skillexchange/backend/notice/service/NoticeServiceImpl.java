@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import place.skillexchange.backend.comment.repository.CommentRepository;
 import place.skillexchange.backend.exception.board.BoardNotFoundException;
+import place.skillexchange.backend.file.repository.FileRepository;
 import place.skillexchange.backend.notice.dto.NoticeDto;
 import place.skillexchange.backend.file.entity.File;
 import place.skillexchange.backend.notice.entity.Notice;
@@ -32,6 +34,8 @@ public class NoticeServiceImpl implements NoticeService{
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
     private final FileServiceImpl fileService;
+    private final CommentRepository commentRepository;
+    private final FileRepository fileRepository;
 
     /**
      * 공지사항 등록
@@ -80,11 +84,12 @@ public class NoticeServiceImpl implements NoticeService{
 
         if (!Objects.equals(id, dto.getWriter()) || !Objects.equals(id, notice.getWriter().getId()) || !Objects.equals(dto.getWriter(), notice.getWriter().getId())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
+
         }
+        List<File> files = fileService.updateNoticeImg(dto.getImgUrl(), multipartFiles, notice);
 
         notice.changeNotice(dto);
 
-        List<File> files = fileService.updateNoticeImg(dto.getImgUrl(), multipartFiles, notice);
 
         return new NoticeDto.NoticeUpdateResponse(user, files , notice,200,"공지가 수정되었습니다.");
     }
@@ -103,6 +108,8 @@ public class NoticeServiceImpl implements NoticeService{
             if (!Objects.equals(id, deletedNotice.get().getWriter().getId())) {
                 throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
             }
+            commentRepository.deleteByNoticeId(noticeId);
+            fileRepository.deleteByNoticeId(noticeId);
             noticeRepository.deleteById(noticeId);
 //            fileService.deleteNoticeImg(deletedNotice.get());
             return new NoticeDto.ResponseBasic(200, "공지사항이 성공적으로 삭제되었습니다.");
