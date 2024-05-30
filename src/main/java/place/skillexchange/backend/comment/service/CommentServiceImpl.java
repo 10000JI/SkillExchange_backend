@@ -33,7 +33,9 @@ public class CommentServiceImpl implements CommentSerivce {
      */
     @Override
     public List<CommentDto.CommentViewResponse> findCommentsByNoticeId(Long noticeId) {
-        noticeRepository.findById(noticeId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
+        if (noticeRepository.countByNoticeId(noticeId) < 1) {
+            throw BoardNotFoundException.EXCEPTION;
+        }
         //댓글 조회 메서드 `convertNestedStructure`
         return convertNestedStructure(commentRepository.findCommentByNoticeId(noticeId));
     }
