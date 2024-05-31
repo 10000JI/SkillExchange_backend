@@ -28,5 +28,4 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     //email와 id가 일치하는 활성화되지 않은 사용자
     Optional<User> findByEmailAndId(String email, String id);
-
 }

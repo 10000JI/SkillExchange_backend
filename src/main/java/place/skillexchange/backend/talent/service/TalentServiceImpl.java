@@ -48,7 +48,7 @@ public class TalentServiceImpl implements TalentService {
     @Override
     public TalentDto.TalentRegisterResponse register(TalentDto.TalentRegisterRequest dto, List<MultipartFile> multipartFiles) throws IOException {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findWithAuthoritiesAndFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         if (!Objects.equals(id, dto.getWriter())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
         }
@@ -83,7 +83,7 @@ public class TalentServiceImpl implements TalentService {
     @Override
     @Transactional
     public TalentDto.TalentReadResponse read(Long talentId) {
-        Talent talent = talentRepository.findById(talentId)
+        Talent talent = talentRepository.findWithWriterAndFilesById(talentId)
                 .orElseThrow(() -> BoardNotFoundException.EXCEPTION);
         talent.updateHit();
         return new TalentDto.TalentReadResponse(talent);
