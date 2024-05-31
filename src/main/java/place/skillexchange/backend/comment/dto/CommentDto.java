@@ -74,9 +74,9 @@ public class CommentDto {
         private String content;
 
         /* Dto -> Entity */
-        public Comment toEntity(User user, Notice notice, Comment parent) {
+        public Comment toEntity(Notice notice, Comment parent) {
             Comment comment = Comment.builder()
-                    .writer(user)
+                    .writer(notice.getWriter())
                     .content(content)
                     .notice(notice)
                     .isDeleted(DeleteStatus.N)

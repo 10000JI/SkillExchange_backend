@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto.ProfileResponse profileUpdate(UserDto.ProfileRequest dto, MultipartFile multipartFile) throws IOException {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findWithAuthoritiesAndFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         user.changeProfileField(dto);
 
         File file = null;
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto.MyProfileResponse profileRead() {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findWithAuthoritiesAndFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         return new UserDto.MyProfileResponse(user, 200, id+"님의 프로필");
     }

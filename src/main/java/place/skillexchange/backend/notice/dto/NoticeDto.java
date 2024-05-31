@@ -161,8 +161,8 @@ public class NoticeDto {
         private String returnMessage;
 
         /* Entity -> Dto */
-        public NoticeUpdateResponse(User user, List<File> files , Notice notice, int returnCode, String returnMessage) {
-            this.writer = user.getId();
+        public NoticeUpdateResponse(List<File> files , Notice notice, int returnCode, String returnMessage) {
+            this.writer = notice.getWriter().getId();
             this.id = notice.getId();
             this.title = notice.getTitle();
             this.content = notice.getContent();

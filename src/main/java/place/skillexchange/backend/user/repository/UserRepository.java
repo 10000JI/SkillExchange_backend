@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     //id를 가지고 User 조회 (lazy 로딩으로 n+1 해결)
     @EntityGraph(attributePaths = {"authorities", "file"})
-    Optional<User> findById(String userId);
+    Optional<User> findWithAuthoritiesAndFileById(String userId);
 
 /*    //id를 가지고 User 조회 (lazy 로딩으로 n+1 해결)
     @EntityGraph(attributePaths = {"authorities", "file"})

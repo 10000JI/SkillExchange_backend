@@ -44,7 +44,7 @@ public class NoticeServiceImpl implements NoticeService{
     @Transactional
     public NoticeDto.NoticeRegisterResponse register(NoticeDto.NoticeRegisterRequest dto, List<MultipartFile> multipartFiles) throws IOException {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findWithAuthoritiesAndFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         if (!Objects.equals(id, dto.getWriter())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
         }
@@ -65,7 +65,7 @@ public class NoticeServiceImpl implements NoticeService{
     @Override
     @Transactional
     public NoticeDto.NoticeReadResponse read(Long noticeId) {
-        Notice notice = noticeRepository.findById(noticeId)
+        Notice notice = noticeRepository.findWithWriterAndFilesById(noticeId)
                 .orElseThrow(() -> BoardNotFoundException.EXCEPTION);
         notice.updateHit(); //update가 발생하므로 @Transactional
         return new NoticeDto.NoticeReadResponse(notice);
@@ -79,8 +79,7 @@ public class NoticeServiceImpl implements NoticeService{
     @Transactional
     public NoticeDto.NoticeUpdateResponse update(NoticeDto.NoticeUpdateRequest dto, List<MultipartFile> multipartFiles, Long noticeId) throws IOException {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
+        Notice notice = noticeRepository.findWithWriterById(noticeId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
 
         if (!Objects.equals(id, dto.getWriter()) || !Objects.equals(id, notice.getWriter().getId()) || !Objects.equals(dto.getWriter(), notice.getWriter().getId())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
@@ -91,7 +90,7 @@ public class NoticeServiceImpl implements NoticeService{
         notice.changeNotice(dto);
 
 
-        return new NoticeDto.NoticeUpdateResponse(user, files , notice,200,"공지가 수정되었습니다.");
+        return new NoticeDto.NoticeUpdateResponse(files , notice,200,"공지가 수정되었습니다.");
     }
 
     /**

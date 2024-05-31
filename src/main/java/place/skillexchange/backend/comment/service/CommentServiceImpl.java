@@ -66,7 +66,6 @@ public class CommentServiceImpl implements CommentSerivce {
     public CommentDto.CommentRegisterResponse createComment(CommentDto.CommentRegisterRequest dto) {
         //로그인한 user 객체 가져옴
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         if (!Objects.equals(id, dto.getWriter())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
         }
@@ -86,7 +85,7 @@ public class CommentServiceImpl implements CommentSerivce {
                         .orElseThrow(() -> CommentNotFoundException.EXCEPTION) : null;
 
         //댓글 저장
-        Comment saveComment = commentRepository.save(dto.toEntity(user, notice, parent));
+        Comment saveComment = commentRepository.save(dto.toEntity(notice, parent));
         return new CommentDto.CommentRegisterResponse(saveComment,201,"댓글이 성공적으로 등록되었습니다.");
     }
 
