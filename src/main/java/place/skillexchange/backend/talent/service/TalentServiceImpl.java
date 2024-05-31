@@ -72,7 +72,8 @@ public class TalentServiceImpl implements TalentService {
     @Override
     public TalentDto.WriterInfoResponse writerInfo(Long talentId) {
         Talent talent = talentRepository.findById(talentId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
-        User user = userRepository.findById(talent.getWriter().getId()).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+//        User user = userRepository.findById(talent.getWriter().getId()).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = talent.getWriter();
         return new TalentDto.WriterInfoResponse(user);
     }
 
