@@ -1,15 +1,10 @@
 package place.skillexchange.backend.talent.repository;
 
-import com.querydsl.core.annotations.QueryEmbedded;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
-import place.skillexchange.backend.notice.entity.Notice;
 import place.skillexchange.backend.talent.entity.Talent;
-import place.skillexchange.backend.user.entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +15,8 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
     List<Talent> findTalentsByUserIdWithScrap(@Param("userId") String userId);
 
     @EntityGraph(attributePaths = {"writer","writer.file","files","place","teachedSubject","teachedSubject.parent","teachingSubject","teachingSubject.parent","dayOfWeek"})
-    Optional<Talent> findWithWriterAndFilesById(Long noticeId);
+    Optional<Talent> findWithAllAssociationsById(Long noticeId);
+    @EntityGraph(attributePaths = {"writer","writer.file","place","teachedSubject","teachingSubject","dayOfWeek"})
+    Optional<Talent> findWithPartAssociationsById(Long noticeId);
 
 }

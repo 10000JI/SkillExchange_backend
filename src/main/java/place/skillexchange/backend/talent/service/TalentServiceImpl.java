@@ -83,7 +83,7 @@ public class TalentServiceImpl implements TalentService {
     @Override
     @Transactional
     public TalentDto.TalentReadResponse read(Long talentId) {
-        Talent talent = talentRepository.findWithWriterAndFilesById(talentId)
+        Talent talent = talentRepository.findWithAllAssociationsById(talentId)
                 .orElseThrow(() -> BoardNotFoundException.EXCEPTION);
         talent.updateHit();
         return new TalentDto.TalentReadResponse(talent);
@@ -96,8 +96,7 @@ public class TalentServiceImpl implements TalentService {
     @Transactional
     public TalentDto.TalentUpdateResponse update(TalentDto.TalentUpdateRequest dto, List<MultipartFile> multipartFiles, Long talentId) throws IOException {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
-        Talent talent = talentRepository.findById(talentId)
+       Talent talent = talentRepository.findWithPartAssociationsById(talentId)
                 .orElseThrow(() -> BoardNotFoundException.EXCEPTION);
         if (!Objects.equals(id, dto.getWriter()) || !Objects.equals(id,talent.getWriter().getId()) || !Objects.equals(dto.getWriter(),talent.getWriter().getId())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
@@ -119,7 +118,7 @@ public class TalentServiceImpl implements TalentService {
         List<File> files = fileService.updateTalentImg(dto.getImgUrl(), multipartFiles, talent);
 
 
-        return new TalentDto.TalentUpdateResponse(user, talent, files, 200, "재능교환 게시물이 수정되었습니다.");
+        return new TalentDto.TalentUpdateResponse(talent, files, 200, "재능교환 게시물이 수정되었습니다.");
     }
 
     /**

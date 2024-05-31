@@ -276,8 +276,8 @@ public class TalentDto {
         private String returnMessage;
 
         /* Entity -> Dto */
-        public TalentUpdateResponse(User user, Talent talent, List<File> files, int returnCode, String returnMessage) {
-            this.writer = user.getId();
+        public TalentUpdateResponse(Talent talent, List<File> files, int returnCode, String returnMessage) {
+            this.writer = talent.getWriter().getId();
             this.id = talent.getId();
             this.title = talent.getTitle();
             this.content = talent.getContent();
