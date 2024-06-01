@@ -333,8 +333,9 @@ public class TalentDto {
         private String avatar;
         private LocalDateTime regDate;
         private Long hit;
+        private Long commentCount; //댓글 개수 추가
 
-        public TalentListResponse(Talent talent) {
+        public TalentListResponse(Talent talent, Long commentCount) {
             this.id = talent.getId();
             this.writer = talent.getWriter().getId();
             this.content = talent.getContent();
@@ -347,6 +348,7 @@ public class TalentDto {
             this.avatar = talent.getWriter().getFile() != null ? talent.getWriter().getFile().getFileUrl() : null; // null 체크 추가
             this.regDate = talent.getRegDate();
             this.hit = talent.getHit();
+            this.commentCount = commentCount;
         }
     }
 }

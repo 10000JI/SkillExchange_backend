@@ -53,14 +53,10 @@ public class CommentRepositoryImpl implements CustomCommentRepository {
     @Override
     public List<Comment> findCommentByTalentId(Long talentId) {
         return queryFactory.selectFrom(comment)
-                .leftJoin(comment.parent)
-                .fetchJoin()
-                .leftJoin(comment.writer)
-                .fetchJoin()
-                .leftJoin(comment.writer.authorities)
-                .fetchJoin()
-                .leftJoin(comment.writer.file)
-                .fetchJoin()
+                .leftJoin(comment.parent).fetchJoin()
+                .leftJoin(comment.writer).fetchJoin()
+                .leftJoin(comment.writer.authorities).fetchJoin()
+                .leftJoin(comment.writer.file).fetchJoin()
                 .where(comment.talent.id.eq(talentId))
                 .orderBy(
                         comment.parent.id.asc().nullsFirst(),
