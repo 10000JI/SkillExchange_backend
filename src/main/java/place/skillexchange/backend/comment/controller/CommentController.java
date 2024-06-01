@@ -26,17 +26,24 @@ public class CommentController {
      */
     @Operation(summary = "공지사항 게시물 번호의 댓글 조회 API", description = "noticeId를 이용해서 댓글들을 조회합니다.")
     @GetMapping(value = "/notice/{noticeId}")
-    public List<CommentDto.CommentViewResponse> findAllCommentsByNoticeId(@Parameter(description = "게시물 ID", required = true, example = "1") @PathVariable("noticeId") Long noticeId) {
+    public List<CommentDto.NoticeCommentViewResponse> findAllCommentsByNoticeId(@Parameter(description = "게시물 ID", required = true, example = "1") @PathVariable("noticeId") Long noticeId) {
         return commentServiceImpl.findCommentsByNoticeId(noticeId);
     }
 
     /**
      * 공지사항 댓글 등록
      */
-    @Operation(summary = "공지사항 게시물 번호의 댓글 등록 API", description = "parentId가 null이면 부모 댓글, parentId가 부모 댓글의 noticeId 값이라면 자식 댓글(대댓글)입니다.")
     @PostMapping(value="/notice/register")
-    public ResponseEntity<CommentDto.CommentRegisterResponse> createComment(@Validated @RequestBody CommentDto.CommentRegisterRequest dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(commentServiceImpl.createComment(dto));
+    public ResponseEntity<CommentDto.CommentRegisterResponse> createNoticeComment(@Validated @RequestBody CommentDto.CommentRegisterRequest dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentServiceImpl.createNoticeComment(dto));
+    }
+
+    /**
+     * 재능교환소 댓글 등록
+     */
+    @PostMapping(value="/talnet/register")
+    public ResponseEntity<CommentDto.CommentRegisterResponse> createTalentComment(@Validated @RequestBody CommentDto.CommentRegisterRequest dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentServiceImpl.createTalentComment(dto));
     }
 
     /**
@@ -47,4 +54,5 @@ public class CommentController {
     public CommentDto.ResponseBasic deleteComment(@PathVariable("commentId") Long commentId) {
         return commentServiceImpl.deleteComment(commentId);
     }
+
 }

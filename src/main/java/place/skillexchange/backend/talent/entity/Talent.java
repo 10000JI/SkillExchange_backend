@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import place.skillexchange.backend.comment.entity.Comment;
 import place.skillexchange.backend.common.entity.BaseEntity;
 import place.skillexchange.backend.common.util.DayOfWeekUtil;
 import place.skillexchange.backend.talent.dto.TalentDto;
@@ -90,6 +91,12 @@ public class Talent extends BaseEntity {
     //Talent 엔티티를 삭제하기 전에 해당 Talent 엔티티와 관련된 모든 TalentScrap 엔티티를 삭제
     @OneToMany(mappedBy = "talent", cascade = CascadeType.REMOVE)
     private Set<TalentScrap> talentScraps = new HashSet<>();
+
+    /**
+     * 양방향
+     */
+    @OneToMany(mappedBy = "talent", cascade = CascadeType.PERSIST)
+    private List<Comment> comments = new ArrayList<>();
 
 
     /**

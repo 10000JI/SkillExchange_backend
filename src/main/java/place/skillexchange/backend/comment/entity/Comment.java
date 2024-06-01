@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import place.skillexchange.backend.notice.entity.Notice;
+import place.skillexchange.backend.talent.entity.Talent;
 import place.skillexchange.backend.user.entity.User;
 
 import java.util.ArrayList;
@@ -38,6 +39,13 @@ public class Comment extends CreatedDateEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
     private Notice notice;
+
+    /**
+     * 양방향
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "talent_id")
+    private Talent talent;
 
     //작성자
     @ManyToOne(fetch = FetchType.LAZY)
