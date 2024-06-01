@@ -31,7 +31,6 @@ public class CustomTalentRepositoryImpl implements CustomTalentRepository {
         QSubjectCategory qTeachedSubject = new QSubjectCategory("teachedSubject");
         QSubjectCategory qTeachingSubject = new QSubjectCategory("teachingSubject");
         QFile qFile = QFile.file;
-        QFile qFiles = new QFile("files");
 
         //subjectCategoryId가 있다면 카테고리 별 게시물 목록
         BooleanExpression predicate = qTalent.isNotNull();
@@ -54,7 +53,6 @@ public class CustomTalentRepositoryImpl implements CustomTalentRepository {
                 .leftJoin(qTalent.writer.authorities, qAuthority).fetchJoin()
                 .leftJoin(qTalent.writer.file, qFile).fetchJoin()
                 .leftJoin(qTalent.place, qPlace).fetchJoin()
-                .leftJoin(qTalent.files, qFiles).fetchJoin()
                 .leftJoin(qTalent.teachedSubject, qTeachedSubject).fetchJoin()
                 .leftJoin(qTalent.teachingSubject, qTeachingSubject).fetchJoin()
                 .where(predicate)

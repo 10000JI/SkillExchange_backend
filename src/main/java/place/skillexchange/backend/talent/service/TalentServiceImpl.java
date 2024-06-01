@@ -153,8 +153,8 @@ public class TalentServiceImpl implements TalentService {
     @Override
     public Page<TalentDto.TalentListResponse> list(int limit, int skip, String keyword, Long subjectCategoryId) {
         if (subjectCategoryId != null) {
-            categoryRepository.findById(subjectCategoryId).orElseThrow(() -> SubjectCategoryNotFoundException.EXCEPTION);
-            categoryRepository.findByIdAndParentIsNotNull(subjectCategoryId).orElseThrow(() -> SubjectCategoryBadRequestException.EXCEPTION);
+            categoryRepository.findById(subjectCategoryId).orElseThrow(() -> SubjectCategoryNotFoundException.EXCEPTION); //과목의 자식 카테고리가 존재하는 카테고리 번호인지 체크
+            categoryRepository.findByIdAndParentIsNotNull(subjectCategoryId).orElseThrow(() -> SubjectCategoryBadRequestException.EXCEPTION); //과목의 부모 카테고리로는 조회 X
         }
         Pageable pageable = PageRequest.of(skip, limit);
         return talentRepository.findAllWithPagingAndSearch(keyword, pageable, subjectCategoryId);
