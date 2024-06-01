@@ -78,7 +78,7 @@ class CommentServiceImplTest {
         when(commentRepository.findCommentByNoticeId(noticeId)).thenReturn(comments);
 
         // When
-        List<CommentDto.NoticeCommentViewResponse> response = commentService.findCommentsByNoticeId(noticeId);
+        List<CommentDto.CommentViewResponse> response = commentService.findCommentsByNoticeId(noticeId);
 
         // Then
         assertThat(response.get(0).getId()).isEqualTo(parentId);

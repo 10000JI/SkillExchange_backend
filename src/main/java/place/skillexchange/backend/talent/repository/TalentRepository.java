@@ -19,4 +19,7 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
     @EntityGraph(attributePaths = {"writer","writer.file","place","teachedSubject","teachingSubject","dayOfWeek"})
     Optional<Talent> findWithPartAssociationsById(Long noticeId);
 
+    @Query("SELECT COUNT(t) FROM Talent t WHERE t.id = :talentId")
+    Long countByTalentId(@Param("talentId") Long talentId);
+
 }

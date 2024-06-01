@@ -36,7 +36,7 @@ public class CommentServiceImpl implements CommentSerivce {
      * 공지사항 게시물 번호의 댓글 조회
      */
     @Override
-    public List<CommentDto.NoticeCommentViewResponse> findCommentsByNoticeId(Long noticeId) {
+    public List<CommentDto.CommentViewResponse> findCommentsByNoticeId(Long noticeId) {
         if (noticeRepository.countByNoticeId(noticeId) < 1) {
             throw BoardNotFoundException.EXCEPTION;
         }
@@ -44,12 +44,24 @@ public class CommentServiceImpl implements CommentSerivce {
         return convertNestedStructure(commentRepository.findCommentByNoticeId(noticeId));
     }
 
-    private List<CommentDto.NoticeCommentViewResponse> convertNestedStructure(List<Comment> comments) {
+    /**
+     * 재능교환 게시물 번호의 댓글 조회
+     */
+    @Override
+    public List<CommentDto.CommentViewResponse> findCommentsByTalentId(Long talentId) {
+        if (talentRepository.countByTalentId(talentId) < 1) {
+            throw BoardNotFoundException.EXCEPTION;
+        }
+        //댓글 조회 메서드 `convertNestedStructure`
+        return convertNestedStructure(commentRepository.findCommentByTalentId(talentId));
+    }
+
+    private List<CommentDto.CommentViewResponse> convertNestedStructure(List<Comment> comments) {
         //조회 결과인 comments List는 (매개변수) 깊이와 작성순으로 정렬된 결과를 가지고 있다.
-        List<CommentDto.NoticeCommentViewResponse> result = new ArrayList<>();
-        Map<Long, CommentDto.NoticeCommentViewResponse> map = new HashMap<>();
+        List<CommentDto.CommentViewResponse> result = new ArrayList<>();
+        Map<Long, CommentDto.CommentViewResponse> map = new HashMap<>();
         comments.stream().forEach(c -> {
-            CommentDto.NoticeCommentViewResponse dto = CommentDto.NoticeCommentViewResponse.entityToDto(c);
+            CommentDto.CommentViewResponse dto = CommentDto.CommentViewResponse.entityToDto(c);
             //자식 댓글을 확인할 때는 부모 댓글이 이미 map에 들어가있는 상황
             map.put(dto.getId(), dto);
             //부모가 있는 자식 댓글이라면 부모 댓글의 자식 댓글 리스트에 현재 자식 댓글을 추가

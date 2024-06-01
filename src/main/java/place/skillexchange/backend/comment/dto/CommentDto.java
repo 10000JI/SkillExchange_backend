@@ -20,22 +20,16 @@ public class CommentDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Schema(description = "공지사항 게시물 번호의 댓글 조회를 위한 도메인 객체")
-    public static class NoticeCommentViewResponse {
-        @Schema(title = "댓글 ID",description = "댓글 ID를 반환합니다.")
+    public static class CommentViewResponse {
         private Long id;
-        @Schema(title = "댓글 내용",description = "댓글 내용을 반환합니다.")
         private String content;
-        @Schema(title = "댓글 작성자",description = "댓글 작성자를 반환합니다.")
         private String userId;
-        @Schema(title = "작성자의 아바타 이미지 URL",description = "작성자의 아바타 이미지 URL를 반환합니다.")
         private String imgUrl;
-        @Schema(title = "댓글 등록일",description = "댓글 등록일을 반환합니다.")
         private LocalDateTime regDate;
-        @Schema(title = "자식 댓글 목록",description = "해당 부모 댓글의 자식 댓글이 존재하면 배열로 반환합니다.")
-        private List<NoticeCommentViewResponse> children = new ArrayList<>();
+        private List<CommentViewResponse> children = new ArrayList<>();
 
         //자식 댓글 목록을 제외한 부모 댓글 요소들만 가진 생성자
-        public NoticeCommentViewResponse(Long id, String content, String userId, String imgUrl, LocalDateTime regDate) {
+        public CommentViewResponse(Long id, String content, String userId, String imgUrl, LocalDateTime regDate) {
             this.id = id;
             this.content = content;
             this.userId = userId;
@@ -45,11 +39,11 @@ public class CommentDto {
 
         //DeleteStatus(삭제된 상태)가 Y(맞다면)라면 new ViewResponse(comment.getId(), "삭제된 댓글입니다.", null)
         //아니라면(N이라면) new ViewResponse(comment.getId(), comment.getContent(), comment.getWriter().getId())
-        public static NoticeCommentViewResponse entityToDto(Comment comment) {
+        public static CommentViewResponse entityToDto(Comment comment) {
             String imgUrl = comment.getWriter() != null && comment.getWriter().getFile() != null ? comment.getWriter().getFile().getFileUrl() : null;
             return comment.getIsDeleted() == DeleteStatus.Y ?
-                    new NoticeCommentViewResponse(comment.getId(), "삭제된 댓글입니다.", null, imgUrl, comment.getRegDate()) :
-                    new NoticeCommentViewResponse(comment.getId(), comment.getContent(), comment.getWriter().getId(), imgUrl, comment.getRegDate());
+                    new CommentViewResponse(comment.getId(), "삭제된 댓글입니다.", null, imgUrl, comment.getRegDate()) :
+                    new CommentViewResponse(comment.getId(), comment.getContent(), comment.getWriter().getId(), imgUrl, comment.getRegDate());
         }
     }
 

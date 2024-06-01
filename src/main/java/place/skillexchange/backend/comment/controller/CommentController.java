@@ -1,6 +1,5 @@
 package place.skillexchange.backend.comment.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +23,16 @@ public class CommentController {
     /**
      * 공지사항 게시물 번호의 댓글 조회
      */
-    @Operation(summary = "공지사항 게시물 번호의 댓글 조회 API", description = "noticeId를 이용해서 댓글들을 조회합니다.")
     @GetMapping(value = "/notice/{noticeId}")
-    public List<CommentDto.NoticeCommentViewResponse> findAllCommentsByNoticeId(@Parameter(description = "게시물 ID", required = true, example = "1") @PathVariable("noticeId") Long noticeId) {
+    public List<CommentDto.CommentViewResponse> findAllCommentsByNoticeId(@Parameter(description = "게시물 ID", required = true, example = "1") @PathVariable("noticeId") Long noticeId) {
         return commentServiceImpl.findCommentsByNoticeId(noticeId);
+    }
+    /**
+     * 재능교환 게시물 번호의 댓글 조회
+     */
+    @GetMapping(value = "/talent/{talentId}")
+    public List<CommentDto.CommentViewResponse> findAllCommentsByTalentId(@Parameter(description = "게시물 ID", required = true, example = "1") @PathVariable("talentId") Long talentId) {
+        return commentServiceImpl.findCommentsByTalentId(talentId);
     }
 
     /**
@@ -49,7 +54,6 @@ public class CommentController {
     /**
      * 공지사항 댓글 삭제
      */
-    @Operation(summary = "공지사항 게시물 번호의 댓글 삭제 API", description = "noticeId를 이용해서 댓글을 삭제합니다.")
     @DeleteMapping(value =  "/notice/{commentId}")
     public CommentDto.ResponseBasic deleteComment(@PathVariable("commentId") Long commentId) {
         return commentServiceImpl.deleteComment(commentId);
