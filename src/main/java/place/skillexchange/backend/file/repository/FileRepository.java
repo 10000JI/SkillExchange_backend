@@ -32,4 +32,7 @@ public interface FileRepository extends JpaRepository<File,Long> {
     @Query("delete from File f where f.fileUrl = :fileUrl")
     void deleteByFileUrl(@Param("fileUrl") String fileUrl);
 
+    @Modifying
+    @Query("delete from File f where f.talent.id = :talentId")
+    void deleteByTalentId(@Param("talentId") Long talentId);
 }

@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import place.skillexchange.backend.comment.repository.CommentRepository;
 import place.skillexchange.backend.exception.board.*;
+import place.skillexchange.backend.file.repository.FileRepository;
 import place.skillexchange.backend.talent.dto.TalentDto;
 import place.skillexchange.backend.exception.user.WriterAndLoggedInUserMismatchExceptionAll;
 import place.skillexchange.backend.exception.user.UserNotFoundException;
@@ -41,6 +43,8 @@ public class TalentServiceImpl implements TalentService {
     private final SubjectCategoryRepository categoryRepository;
     private final FileService fileService;
     private final TalentScrapRepository scrapRepository;
+    private final CommentRepository commentRepository;
+    private final FileRepository fileRepository;
 
     /**
      * 재능교환 게시물 생성
@@ -125,6 +129,7 @@ public class TalentServiceImpl implements TalentService {
      * 게시물 삭제
      */
     @Override
+    @Transactional
     public TalentDto.ResponseBasic delete(Long talentId) {
         String id = securityUtil.getCurrentMemberUsername();
         Optional<Talent> deleteTalent = talentRepository.findById(talentId);
@@ -132,6 +137,9 @@ public class TalentServiceImpl implements TalentService {
             if (!Objects.equals(id, deleteTalent.get().getWriter().getId())) {
                 throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
             }
+            commentRepository.removeParentRelationForChildCommentsByTalentId(talentId);
+            commentRepository.deleteParentCommentsByTalentId(talentId);
+            fileRepository.deleteByTalentId(talentId);
             talentRepository.deleteById(talentId);
             return new TalentDto.ResponseBasic(200, "재능교환 게시물이 성공적으로 삭제되었습니다.");
         } else {
@@ -158,7 +166,7 @@ public class TalentServiceImpl implements TalentService {
     @Override
     public TalentDto.ResponseBasic scrap(Long talentId) {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findWithAuthoritiesAndFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         if (scrapRepository.findByTalentIdAndUserId(talentId, id) != null) {
             throw BoardAleadyScrappedException.EXCEPTION;
         }

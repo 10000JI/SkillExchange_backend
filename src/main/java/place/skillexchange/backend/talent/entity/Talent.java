@@ -82,7 +82,7 @@ public class Talent extends BaseEntity {
     /**
      * 이미지와 양방향 매핑
      */
-    @OneToMany(mappedBy = "talent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "talent", cascade = CascadeType.PERSIST)
     private List<File> files = new ArrayList<>();
 
     /**

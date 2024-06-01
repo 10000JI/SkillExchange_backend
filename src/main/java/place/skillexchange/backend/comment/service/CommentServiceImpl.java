@@ -123,10 +123,6 @@ public class CommentServiceImpl implements CommentSerivce {
         return new CommentDto.CommentRegisterResponse(saveComment, 201, "댓글이 성공적으로 등록되었습니다.");
     }
 
-
-
-
-
     /**
      * 공지사항 게시물 번호의 댓글 삭제
      */

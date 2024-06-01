@@ -52,11 +52,10 @@ public class CommentController {
     }
 
     /**
-     * 공지사항 댓글 삭제
+     * 공지사항, 재능교환소 댓글 삭제
      */
-    @DeleteMapping(value =  "/notice/{commentId}")
-    public CommentDto.ResponseBasic deleteComment(@PathVariable("commentId") Long commentId) {
+    @DeleteMapping(value =  "/board/{commentId}")
+    public CommentDto.ResponseBasic deleteNoticeComment(@PathVariable("commentId") Long commentId) {
         return commentServiceImpl.deleteComment(commentId);
     }
-
 }

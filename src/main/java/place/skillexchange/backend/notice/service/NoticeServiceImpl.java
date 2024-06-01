@@ -108,8 +108,8 @@ public class NoticeServiceImpl implements NoticeService{
                 throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
             }
 
-            commentRepository.removeParentRelationForChildComments(noticeId);
-            commentRepository.deleteParentComments(noticeId);
+            commentRepository.removeParentRelationForChildCommentsByNoticeId(noticeId);
+            commentRepository.deleteParentCommentsByNoticeId(noticeId);
             fileRepository.deleteByNoticeId(noticeId);
             noticeRepository.deleteById(noticeId);
 //            fileService.deleteNoticeImg(deletedNotice.get());
