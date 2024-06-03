@@ -50,7 +50,6 @@ public class CustomTalentRepositoryImpl implements CustomTalentRepository {
                 .select(Projections.constructor(TalentDto.TalentListResponse.class, qTalent, qTalent.comments.size().longValue())) //TalentListResponse 객체는 Talent 엔티티의 정보와 함께 댓글 개수를 포함
                 .from(qTalent)
                 .leftJoin(qTalent.writer).fetchJoin()
-                .leftJoin(qTalent.writer.authorities).fetchJoin()
                 .leftJoin(qTalent.writer.file).fetchJoin()
                 .leftJoin(qTalent.place).fetchJoin()
                 .leftJoin(qTalent.teachedSubject).fetchJoin()

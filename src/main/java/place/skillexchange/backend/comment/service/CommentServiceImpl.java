@@ -99,7 +99,7 @@ public class CommentServiceImpl implements CommentSerivce {
     public <T> CommentDto.CommentRegisterResponse createComment(CommentDto.CommentRegisterRequest<T> dto, Function<Long, T> boardFinder) {
         // 로그인한 user 객체 가져옴
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findWithAuthoritiesAndFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findWithFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         if (!Objects.equals(id, dto.getWriter())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
         }

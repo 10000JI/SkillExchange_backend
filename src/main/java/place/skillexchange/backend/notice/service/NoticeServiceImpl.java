@@ -44,7 +44,7 @@ public class NoticeServiceImpl implements NoticeService{
     @Transactional
     public NoticeDto.NoticeRegisterResponse register(NoticeDto.NoticeRegisterRequest dto, List<MultipartFile> multipartFiles) throws IOException {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findWithAuthoritiesAndFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findWithFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         if (!Objects.equals(id, dto.getWriter())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
         }

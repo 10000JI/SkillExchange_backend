@@ -26,8 +26,6 @@ public class CommentRepositoryImpl implements CustomCommentRepository {
                 .fetchJoin()
                 .leftJoin(comment.writer)
                 .fetchJoin()
-                .leftJoin(comment.writer.authorities)
-                .fetchJoin()
                 .leftJoin(comment.writer.file)
                 .fetchJoin()
                 .where(comment.notice.id.eq(noticeId))
@@ -55,7 +53,6 @@ public class CommentRepositoryImpl implements CustomCommentRepository {
         return queryFactory.selectFrom(comment)
                 .leftJoin(comment.parent).fetchJoin()
                 .leftJoin(comment.writer).fetchJoin()
-                .leftJoin(comment.writer.authorities).fetchJoin()
                 .leftJoin(comment.writer.file).fetchJoin()
                 .where(comment.talent.id.eq(talentId))
                 .orderBy(

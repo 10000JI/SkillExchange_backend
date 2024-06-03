@@ -58,18 +58,13 @@ public class User implements UserDetails {
     /**
      * Security에서 권한 정보 로드할 때 LAZY(지연)로딩이 아니라 EAGER(즉시)로딩으로 설정해야 함
      */
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "user_authority",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
 
-//    /**
-//     * User와 RefreshToken은 1:1 관계
-//     */
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    private RefreshToken refreshToken;
 
     /**
      * User와 File은 1:1 관계

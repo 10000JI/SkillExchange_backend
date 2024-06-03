@@ -52,7 +52,7 @@ public class TalentServiceImpl implements TalentService {
     @Override
     public TalentDto.TalentRegisterResponse register(TalentDto.TalentRegisterRequest dto, List<MultipartFile> multipartFiles) throws IOException {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findWithAuthoritiesAndFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findWithFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         if (!Objects.equals(id, dto.getWriter())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
         }
@@ -166,7 +166,7 @@ public class TalentServiceImpl implements TalentService {
     @Override
     public TalentDto.ResponseBasic scrap(Long talentId) {
         String id = securityUtil.getCurrentMemberUsername();
-        User user = userRepository.findWithAuthoritiesAndFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        User user = userRepository.findWithFileById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         if (scrapRepository.findByTalentIdAndUserId(talentId, id) != null) {
             throw BoardAleadyScrappedException.EXCEPTION;
         }
