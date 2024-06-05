@@ -15,9 +15,9 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
     List<Talent> findTalentsByUserIdWithScrap(@Param("userId") String userId);
 
     //@EntityGraph(attributePaths = {"writer","writer.file","place","files","teachedSubject","teachedSubject.parent","teachingSubject","teachingSubject.parent"})
+    //@Query("SELECT DISTINCT t FROM Talent t WHERE t.id = :talentId")
     @Query("SELECT DISTINCT t FROM Talent t " +
             "LEFT JOIN FETCH t.writer w " +
-            "LEFT JOIN FETCH t.writer.file " +
             "LEFT JOIN FETCH w.file " +
             "LEFT JOIN FETCH t.files " +
             "LEFT JOIN FETCH t.place " +
