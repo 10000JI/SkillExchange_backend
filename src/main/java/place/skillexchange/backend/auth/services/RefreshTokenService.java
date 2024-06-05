@@ -40,11 +40,11 @@ public class RefreshTokenService {
 //        //user의 refreshToken을 가져와 RefreshToken 객체 추출
 //        RefreshToken refreshToken = user.getRefreshToken();
 
-        RefreshToken refreshToken = refreshTokenRepository.findRefreshTokenByUser(user).orElseThrow(() -> RefreshTokenNotFoundException.EXCEPTION);
+        Optional<RefreshToken> refresh = refreshTokenRepository.findRefreshTokenByUser(user);
 
         //refreshToken이 NULL이라면 refreshToken을 새롭게 만든다
-        if (refreshToken == null) {
-            refreshToken = RefreshToken.builder()
+        if (!refresh.isPresent()) {
+            RefreshToken refreshToken = RefreshToken.builder()
                     //refreshToken은 UUID로 생성
                     .refreshToken(UUID.randomUUID().toString())
                     //만료일은 2분 (실제로는 2주 정도로 설정)
@@ -53,12 +53,13 @@ public class RefreshTokenService {
                     .build();
 
             refreshTokenRepository.save(refreshToken);
+            return refreshToken;
         } else {
-            refreshToken.changeRefreshTokenExp(new Date((new Date()).getTime() +  /*5 * 60 * 1000*/14 * 24 * 60 * 60 * 1000),UUID.randomUUID().toString());
+            refresh.get().changeRefreshTokenExp(new Date((new Date()).getTime() +  /*5 * 60 * 1000*/14 * 24 * 60 * 60 * 1000),UUID.randomUUID().toString());
             //refreshTokenRepository.save(refreshToken);
         }
 
-        return refreshToken;
+        return refresh.get();
     }
 
     /**

@@ -46,7 +46,7 @@ public class CommentController {
     /**
      * 재능교환소 댓글 등록
      */
-    @PostMapping(value="/talnet/register")
+    @PostMapping(value="/talent/register")
     public ResponseEntity<CommentDto.CommentRegisterResponse> createTalentComment(@Validated @RequestBody CommentDto.CommentRegisterRequest dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentServiceImpl.createTalentComment(dto));
     }
@@ -54,7 +54,7 @@ public class CommentController {
     /**
      * 공지사항, 재능교환소 댓글 삭제
      */
-    @DeleteMapping(value =  "/board/{commentId}")
+    @DeleteMapping(value =  "/{commentId}")
     public CommentDto.ResponseBasic deleteNoticeComment(@PathVariable("commentId") Long commentId) {
         return commentServiceImpl.deleteComment(commentId);
     }
