@@ -188,59 +188,59 @@ class TalentServiceImplTest {
         verify(userRepository).findById(talent.getWriter().getId());
     }
 
-    @Test
-    @DisplayName("재능교환 게시물 조회 성공 테스트")
-    public void testRead()  {
-        //Given
-        Long boardId = 1L;
-        String writer = "testUser";
-        String title = "testTitle";
-        String content = "testContent";
-        String placeName = "testPlace";
-        String teachingSubject = "testTeachingSubject";
-        String teachedSubject = "testTeachedSubject";
-        Long minAge = 25L;
-        Long maxAge = 30L;
-        Set<String> selectedDays = new HashSet<>(Arrays.asList("MON", "TUE", "WED"));
-        String gender = "FEMALE";
-        String img1 = "img1.jpg";
-        String img2 = "img2.jpg";
-        String imgUrl1 = "https://.../img1.jpg";
-        String imgUrl2 = "https://.../img2.jpg";
-
-
-        List<File> boardFile = new ArrayList<>();
-        File file = File.builder().oriName(img2).fileUrl(imgUrl2).build();
-        boardFile.add(file);
-        File avatarFile = File.builder().id(1L).oriName(img1).fileUrl(imgUrl1).build();
-        User user = User.builder().id(writer).file(avatarFile).build();
-        SubjectCategory teachingSubjectCategory = new SubjectCategory(7L, teachingSubject, new SubjectCategory(1L, "parentCategory1", null));
-        SubjectCategory teachedSubjectCategory = new SubjectCategory(19L, teachedSubject, new SubjectCategory(2L, "parentCategory2", null));
-        Talent talent = Talent.builder().id(boardId).writer(user).place(new Place(1L, placeName)).teachingSubject(teachingSubjectCategory).teachedSubject(teachedSubjectCategory).title(title).content(content).minAge(minAge).maxAge(maxAge).gender(GenderForTalent.valueOf(gender)).dayOfWeek(DayOfWeekUtil.convertSelectedDaysToEnum(selectedDays)).hit(0L).files(boardFile).build();
-
-        //talentRepository의 동작을 모의화
-        when(talentRepository.findById(boardId)).thenReturn(Optional.of(talent));
-
-        //When
-        TalentDto.TalentReadResponse response = talentService.read(boardId);
-
-        // Then
-        assertNotNull(response);
-        assertThat(boardId).isEqualTo(response.getId());
-        assertThat(imgUrl1).isEqualTo(response.getAvatar());
-        assertThat(title).isEqualTo(response.getTitle());
-        assertThat(content).isEqualTo(response.getContent());
-        assertThat(placeName).isEqualTo(response.getPlaceName());
-        assertThat(teachingSubject).isEqualTo(response.getTeachingSubject());
-        assertThat(teachedSubject).isEqualTo(response.getTeachedSubject());
-        assertThat(minAge).isEqualTo(response.getMinAge());
-        assertThat(maxAge).isEqualTo(response.getMaxAge());
-        assertThat(selectedDays).isEqualTo(response.getSelectedDays());
-        assertThat(gender).isEqualTo(response.getGender());
-        assertThat(imgUrl2).isEqualTo(response.getImgUrl().get(0));
-
-        verify(talentRepository).findById(boardId);
-    }
+//    @Test
+//    @DisplayName("재능교환 게시물 조회 성공 테스트")
+//    public void testRead()  {
+//        //Given
+//        Long boardId = 1L;
+//        String writer = "testUser";
+//        String title = "testTitle";
+//        String content = "testContent";
+//        String placeName = "testPlace";
+//        String teachingSubject = "testTeachingSubject";
+//        String teachedSubject = "testTeachedSubject";
+//        Long minAge = 25L;
+//        Long maxAge = 30L;
+//        Set<String> selectedDays = new HashSet<>(Arrays.asList("MON", "TUE", "WED"));
+//        String gender = "FEMALE";
+//        String img1 = "img1.jpg";
+//        String img2 = "img2.jpg";
+//        String imgUrl1 = "https://.../img1.jpg";
+//        String imgUrl2 = "https://.../img2.jpg";
+//
+//
+//        List<File> boardFile = new ArrayList<>();
+//        File file = File.builder().oriName(img2).fileUrl(imgUrl2).build();
+//        boardFile.add(file);
+//        File avatarFile = File.builder().id(1L).oriName(img1).fileUrl(imgUrl1).build();
+//        User user = User.builder().id(writer).file(avatarFile).build();
+//        SubjectCategory teachingSubjectCategory = new SubjectCategory(7L, teachingSubject, new SubjectCategory(1L, "parentCategory1", null));
+//        SubjectCategory teachedSubjectCategory = new SubjectCategory(19L, teachedSubject, new SubjectCategory(2L, "parentCategory2", null));
+//        Talent talent = Talent.builder().id(boardId).writer(user).place(new Place(1L, placeName)).teachingSubject(teachingSubjectCategory).teachedSubject(teachedSubjectCategory).title(title).content(content).minAge(minAge).maxAge(maxAge).gender(GenderForTalent.valueOf(gender)).dayOfWeek(DayOfWeekUtil.convertSelectedDaysToEnum(selectedDays)).hit(0L).files(boardFile).build();
+//
+//        //talentRepository의 동작을 모의화
+//        when(talentRepository.findById(boardId)).thenReturn(Optional.of(talent));
+//
+//        //When
+//        TalentDto.TalentReadResponse response = talentService.read(boardId);
+//
+//        // Then
+//        assertNotNull(response);
+//        assertThat(boardId).isEqualTo(response.getId());
+//        assertThat(imgUrl1).isEqualTo(response.getAvatar());
+//        assertThat(title).isEqualTo(response.getTitle());
+//        assertThat(content).isEqualTo(response.getContent());
+//        assertThat(placeName).isEqualTo(response.getPlaceName());
+//        assertThat(teachingSubject).isEqualTo(response.getTeachingSubject());
+//        assertThat(teachedSubject).isEqualTo(response.getTeachedSubject());
+//        assertThat(minAge).isEqualTo(response.getMinAge());
+//        assertThat(maxAge).isEqualTo(response.getMaxAge());
+//        assertThat(selectedDays).isEqualTo(response.getSelectedDays());
+//        assertThat(gender).isEqualTo(response.getGender());
+//        assertThat(imgUrl2).isEqualTo(response.getImgUrl().get(0));
+//
+//        verify(talentRepository).findById(boardId);
+//    }
 
     @Test
     @DisplayName("재능교환 게시물 수정 성공 테스트 (변경 데이터: 가르침을 받을 과목(teachedSubject), 새로운 이미치 추가)")

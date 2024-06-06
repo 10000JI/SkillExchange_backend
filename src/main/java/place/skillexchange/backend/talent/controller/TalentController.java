@@ -1,5 +1,7 @@
 package place.skillexchange.backend.talent.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -40,8 +42,9 @@ public class TalentController {
      * 게시물 정보 불러오기
      */
     @GetMapping("/{talentId}")
-    public TalentDto.TalentReadResponse read(@PathVariable Long talentId) {
-        return talentService.read(talentId);
+    public TalentDto.TalentReadResponse read(@PathVariable Long talentId, HttpServletRequest request,
+                                             HttpServletResponse response) {
+        return talentService.read(talentId, request, response);
     }
 
     /**

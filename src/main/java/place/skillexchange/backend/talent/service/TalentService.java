@@ -1,5 +1,7 @@
 package place.skillexchange.backend.talent.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 import place.skillexchange.backend.talent.dto.TalentDto;
@@ -13,7 +15,8 @@ public interface TalentService {
 
     public TalentDto.WriterInfoResponse writerInfo(Long writerId);
 
-    public TalentDto.TalentReadResponse read(Long writerId);
+    public TalentDto.TalentReadResponse read(Long writerId, HttpServletRequest request,
+                                             HttpServletResponse response);
 
     public TalentDto.TalentUpdateResponse update(TalentDto.TalentUpdateRequest dto, List<MultipartFile> multipartFiles, Long talentId) throws IOException;
 

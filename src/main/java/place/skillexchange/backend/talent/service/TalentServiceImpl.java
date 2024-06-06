@@ -1,6 +1,10 @@
 package place.skillexchange.backend.talent.service;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import place.skillexchange.backend.comment.repository.CommentRepository;
+import place.skillexchange.backend.common.service.RedisService;
 import place.skillexchange.backend.exception.board.*;
 import place.skillexchange.backend.file.repository.FileRepository;
 import place.skillexchange.backend.talent.dto.TalentDto;
@@ -28,12 +33,15 @@ import place.skillexchange.backend.user.repository.UserRepository;
 import place.skillexchange.backend.common.util.SecurityUtil;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TalentServiceImpl implements TalentService {
 
     private final SecurityUtil securityUtil;
@@ -45,6 +53,8 @@ public class TalentServiceImpl implements TalentService {
     private final TalentScrapRepository scrapRepository;
     private final CommentRepository commentRepository;
     private final FileRepository fileRepository;
+    private final RedisService redisService;
+    private final static String VIEWCOOKIENAME = "alreadyViewCookie";
 
     /**
      * 재능교환 게시물 생성
@@ -86,11 +96,60 @@ public class TalentServiceImpl implements TalentService {
      */
     @Override
     @Transactional
-    public TalentDto.TalentReadResponse read(Long talentId) {
+    public TalentDto.TalentReadResponse read(Long talentId, HttpServletRequest request, HttpServletResponse response) {
         Talent talent = talentRepository.findWithAllAssociationsById(talentId)
                 .orElseThrow(() -> BoardNotFoundException.EXCEPTION);
-        talent.updateHit();
+        String id = securityUtil.getCurrentMemberUsernameOrNonMember();
+        if (id.equals("non-Member")) {
+            Cookie[] cookies = request.getCookies();
+            boolean checkCookie = false;
+            int result = 0;
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    // 이미 조회를 한 경우 체크
+                    if (cookie.getName().equals(VIEWCOOKIENAME + talentId)) checkCookie = true;
+                }
+                if (!checkCookie) {
+                    Cookie newCookie = createCookieForForNotOverlap(talentId);
+                    response.addCookie(newCookie);
+                    talent.updateHit();
+                }
+            } else {
+                Cookie newCookie = createCookieForForNotOverlap(talentId);
+                response.addCookie(newCookie);
+                talent.updateHit();
+            }
+        } else {
+            if (redisService.isFirstIpRequest(id, talentId)) {
+                log.debug("same user requests duplicate in 24hours: {}, {}", id, talentId);
+                increasePostHitCount(talent, talentId, id);
+            }
+        }
         return new TalentDto.TalentReadResponse(talent);
+    }
+
+    /*
+     * 조회수 중복 방지를 위한 쿠키 생성 메소드
+     */
+    private Cookie createCookieForForNotOverlap(Long postId) {
+        Cookie cookie = new Cookie(VIEWCOOKIENAME+postId, String.valueOf(postId));
+        cookie.setMaxAge(getExpirationInSeconds(24 * 60 * 60)); // 24시간 = 24 * 60 * 60 초
+        cookie.setHttpOnly(true); // 서버에서만 조작 가능
+        return cookie;
+    }
+
+    private int getExpirationInSeconds(int expirationInSeconds) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expirationTime = now.plusSeconds(expirationInSeconds);
+        return (int) now.until(expirationTime, ChronoUnit.SECONDS);
+    }
+
+    /*
+     * 조회수 중복 방지를 위한 Redis 키 생성 메서드
+     */
+    private void increasePostHitCount(Talent talent, Long talentId ,String userId) {
+        talent.updateHit();
+        redisService.writeClientRequest(userId, talentId);
     }
 
     /**
@@ -100,7 +159,7 @@ public class TalentServiceImpl implements TalentService {
     @Transactional
     public TalentDto.TalentUpdateResponse update(TalentDto.TalentUpdateRequest dto, List<MultipartFile> multipartFiles, Long talentId) throws IOException {
         String id = securityUtil.getCurrentMemberUsername();
-       Talent talent = talentRepository.findWithPartAssociationsById(talentId)
+        Talent talent = talentRepository.findWithPartAssociationsById(talentId)
                 .orElseThrow(() -> BoardNotFoundException.EXCEPTION);
         if (!Objects.equals(id, dto.getWriter()) || !Objects.equals(id,talent.getWriter().getId()) || !Objects.equals(dto.getWriter(),talent.getWriter().getId())) {
             throw WriterAndLoggedInUserMismatchExceptionAll.EXCEPTION;
