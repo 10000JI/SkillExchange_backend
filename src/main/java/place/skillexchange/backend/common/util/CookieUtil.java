@@ -14,7 +14,7 @@ public class CookieUtil {
     private final static String VIEWCOOKIENAME = "AlreadyView";
 
     public Cookie createCookieForForNotOverlap(Long postId, Object reference) {
-        Cookie cookie = new Cookie(VIEWCOOKIENAME+getObjectName(reference)+"-No."+postId, String.valueOf(postId));
+        Cookie cookie = new Cookie(getCookieName(postId,reference), String.valueOf(postId));
         cookie.setMaxAge(getExpirationInSeconds(24 * 60 * 60)); // 24시간 = 24 * 60 * 60 초
         cookie.setHttpOnly(true); // 서버에서만 조작 가능
         return cookie;

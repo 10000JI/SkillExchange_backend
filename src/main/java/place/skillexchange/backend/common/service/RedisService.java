@@ -30,7 +30,6 @@ public class RedisService {
         String key = generateKey(userId, talentId, reference);
         log.debug("user post request key: {}", key);
 
-        // 사실 set 할때 value가 필요없음. 그나마 가장 작은 불린으로 넣긴 했는데 아직 레디스를 잘 몰라서 이렇게 쓰고 있음
         redisTemplate.opsForValue().set(key, true);
         redisTemplate.expire(key, clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
     }
