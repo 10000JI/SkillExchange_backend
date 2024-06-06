@@ -3,6 +3,8 @@ package place.skillexchange.backend.notice.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -38,8 +40,8 @@ public class NoticeController {
      */
     @Operation(summary = "공지사항 조회 API", description = "noticeId를 이용해서 게시물을 조회합니다.")
     @GetMapping("/{noticeId}")
-    public NoticeDto.NoticeReadResponse read(@Parameter(description = "게시물 번호", required = true, example = "1") @PathVariable Long noticeId) {
-        return noticeService.read(noticeId);
+    public NoticeDto.NoticeReadResponse read(@Parameter(description = "게시물 번호", required = true, example = "1") @PathVariable Long noticeId, HttpServletRequest request, HttpServletResponse response) {
+        return noticeService.read(noticeId, request, response);
     }
 
     /**

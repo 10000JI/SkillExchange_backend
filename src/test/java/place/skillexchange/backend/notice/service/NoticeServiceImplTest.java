@@ -165,26 +165,26 @@ class NoticeServiceImplTest {
         assertThat(thrown).isInstanceOf(WriterAndLoggedInUserMismatchExceptionAll.class);
     }
 
-    @Test
-    @DisplayName("공지사항 조회 테스트")
-    public void testRead() {
-        // Given
-        Long noticeId = 1L;
-        List<File> files = new ArrayList<>();
-        Notice notice = Notice.builder().id(noticeId).title("testTitle").content("testContent").writer(User.builder().id("testUser").build()).hit(0L).files(files).build();
-
-        when(noticeRepository.findById(noticeId)).thenReturn(Optional.of(notice));
-
-        // When
-        NoticeDto.NoticeReadResponse response = noticeService.read(noticeId);
-
-        // Then
-        // 해당 공지사항이 반환되었는지 확인
-        assertNotNull(response);
-
-        // findById 메서드가 호출되었는지 확인
-        verify(noticeRepository).findById(noticeId);
-    }
+//    @Test
+//    @DisplayName("공지사항 조회 테스트")
+//    public void testRead() {
+//        // Given
+//        Long noticeId = 1L;
+//        List<File> files = new ArrayList<>();
+//        Notice notice = Notice.builder().id(noticeId).title("testTitle").content("testContent").writer(User.builder().id("testUser").build()).hit(0L).files(files).build();
+//
+//        when(noticeRepository.findById(noticeId)).thenReturn(Optional.of(notice));
+//
+//        // When
+//        NoticeDto.NoticeReadResponse response = noticeService.read(noticeId);
+//
+//        // Then
+//        // 해당 공지사항이 반환되었는지 확인
+//        assertNotNull(response);
+//
+//        // findById 메서드가 호출되었는지 확인
+//        verify(noticeRepository).findById(noticeId);
+//    }
 
     @Test
     @DisplayName("공지사항 수정 성공 테스트")

@@ -1,5 +1,7 @@
 package place.skillexchange.backend.notice.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 import place.skillexchange.backend.notice.dto.NoticeDto;
@@ -11,7 +13,7 @@ public interface NoticeService {
 
     public NoticeDto.NoticeRegisterResponse register(NoticeDto.NoticeRegisterRequest dto, List<MultipartFile> multipartFiles) throws IOException;
 
-    public NoticeDto.NoticeReadResponse read(Long noticeId);
+    public NoticeDto.NoticeReadResponse read(Long noticeId, HttpServletRequest request, HttpServletResponse response);
 
     public NoticeDto.NoticeUpdateResponse update(NoticeDto.NoticeUpdateRequest dto, List<MultipartFile> multipartFile, Long noticeId) throws IOException;
 

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import place.skillexchange.backend.comment.repository.CommentRepository;
 import place.skillexchange.backend.common.service.RedisService;
+import place.skillexchange.backend.common.util.CookieUtil;
 import place.skillexchange.backend.exception.board.*;
 import place.skillexchange.backend.file.repository.FileRepository;
 import place.skillexchange.backend.talent.dto.TalentDto;
@@ -54,7 +55,7 @@ public class TalentServiceImpl implements TalentService {
     private final CommentRepository commentRepository;
     private final FileRepository fileRepository;
     private final RedisService redisService;
-    private final static String VIEWCOOKIENAME = "alreadyViewCookie";
+    private final CookieUtil cookieUtil;
 
     /**
      * 재능교환 게시물 생성
@@ -103,24 +104,23 @@ public class TalentServiceImpl implements TalentService {
         if (id.equals("non-Member")) {
             Cookie[] cookies = request.getCookies();
             boolean checkCookie = false;
-            int result = 0;
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     // 이미 조회를 한 경우 체크
-                    if (cookie.getName().equals(VIEWCOOKIENAME + talentId)) checkCookie = true;
+                    if (cookie.getName().equals(cookieUtil.getCookieName(talentId,talent))) checkCookie = true;
                 }
                 if (!checkCookie) {
-                    Cookie newCookie = createCookieForForNotOverlap(talentId);
+                    Cookie newCookie = cookieUtil.createCookieForForNotOverlap(talentId,talent);
                     response.addCookie(newCookie);
                     talent.updateHit();
                 }
             } else {
-                Cookie newCookie = createCookieForForNotOverlap(talentId);
+                Cookie newCookie = cookieUtil.createCookieForForNotOverlap(talentId, talent);
                 response.addCookie(newCookie);
                 talent.updateHit();
             }
         } else {
-            if (redisService.isFirstIpRequest(id, talentId)) {
+            if (redisService.isFirstIpRequest(id, talentId, talent)) {
                 log.debug("same user requests duplicate in 24hours: {}, {}", id, talentId);
                 increasePostHitCount(talent, talentId, id);
             }
@@ -129,27 +129,11 @@ public class TalentServiceImpl implements TalentService {
     }
 
     /*
-     * 조회수 중복 방지를 위한 쿠키 생성 메소드
-     */
-    private Cookie createCookieForForNotOverlap(Long postId) {
-        Cookie cookie = new Cookie(VIEWCOOKIENAME+postId, String.valueOf(postId));
-        cookie.setMaxAge(getExpirationInSeconds(24 * 60 * 60)); // 24시간 = 24 * 60 * 60 초
-        cookie.setHttpOnly(true); // 서버에서만 조작 가능
-        return cookie;
-    }
-
-    private int getExpirationInSeconds(int expirationInSeconds) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expirationTime = now.plusSeconds(expirationInSeconds);
-        return (int) now.until(expirationTime, ChronoUnit.SECONDS);
-    }
-
-    /*
      * 조회수 중복 방지를 위한 Redis 키 생성 메서드
      */
     private void increasePostHitCount(Talent talent, Long talentId ,String userId) {
         talent.updateHit();
-        redisService.writeClientRequest(userId, talentId);
+        redisService.writeClientRequest(userId, talentId, talent);
     }
 
     /**
