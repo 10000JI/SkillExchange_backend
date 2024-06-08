@@ -36,6 +36,7 @@ import place.skillexchange.backend.common.util.SecurityUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -218,5 +219,20 @@ public class TalentServiceImpl implements TalentService {
         scrapRepository.save(scrap);
 
         return new TalentDto.ResponseBasic(201,"스크랩이 완료되었습니다.");
+    }
+
+    @Override
+    public List<TalentDto.RelatedPostsResponse> getRelatedPosts(String subjectName) {
+        List<TalentDto.RelatedPostsResponse> result = new ArrayList<>();
+        Pageable pageable = PageRequest.of(0, 5);
+        List<Talent> relatedPostsById = talentRepository.findRelatedPostsById(pageable, subjectName);
+        if (!relatedPostsById.isEmpty()) {
+            for (Talent talent : relatedPostsById) {
+                result.add(new TalentDto.RelatedPostsResponse(talent));
+            }
+        } else {
+            throw BoardNotFoundException.EXCEPTION;
+        }
+        return result;
     }
 }

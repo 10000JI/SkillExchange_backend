@@ -351,4 +351,38 @@ public class TalentDto {
             this.commentCount = commentCount;
         }
     }
+
+    /**
+     * 관련 게시물 목록 요청 Dto
+     */
+    @Getter
+    public static class RelatedPostsRequest {
+        private String subjectName;
+    }
+
+    /**
+     * 관련 게시물 목록 응답 Dto
+     */
+    @Getter
+    @AllArgsConstructor
+    public static class RelatedPostsResponse {
+        private Long id;
+        private String title;
+        private String content;
+        private String placeName;
+        private String teachingSubject;
+        private String teachedSubject;
+        private LocalDateTime regDate;
+
+        public RelatedPostsResponse(Talent talent) {
+            this.id = talent.getId();
+            this.content = talent.getContent();
+            this.title = talent.getTitle();
+            this.placeName = talent.getPlace().getPlaceName();
+            this.teachingSubject = talent.getTeachingSubject().getSubjectName();
+            this.teachedSubject = talent.getTeachedSubject().getSubjectName();
+            this.regDate = talent.getRegDate();
+        }
+    }
+
 }

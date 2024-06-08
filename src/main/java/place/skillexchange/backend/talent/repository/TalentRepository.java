@@ -1,5 +1,6 @@
 package place.skillexchange.backend.talent.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,4 +34,7 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
     @Query("SELECT COUNT(t) FROM Talent t WHERE t.id = :talentId")
     Long countByTalentId(@Param("talentId") Long talentId);
 
+    //관련 게시물 5개 뽑아내기
+    @Query("SELECT t FROM Talent t LEFT JOIN FETCH t.teachedSubject sc WHERE sc.subjectName = :subjectName ORDER BY t.id DESC")
+    List<Talent> findRelatedPostsById(Pageable pageable, String subjectName);
 }

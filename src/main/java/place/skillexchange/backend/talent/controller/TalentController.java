@@ -84,4 +84,12 @@ public class TalentController {
     public ResponseEntity<TalentDto.ResponseBasic> scrap(@PathVariable Long talentId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(talentService.scrap(talentId));
     }
+
+    /**
+     * 관련 게시물
+     */
+    @GetMapping("/relatedPosts")
+    public List<TalentDto.RelatedPostsResponse> getRelatedPosts(@RequestBody TalentDto.RelatedPostsRequest dto) {
+        return talentService.getRelatedPosts(dto.getSubjectName());
+    }
 }

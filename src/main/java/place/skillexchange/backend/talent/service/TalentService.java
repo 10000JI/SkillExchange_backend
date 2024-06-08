@@ -25,4 +25,6 @@ public interface TalentService {
     public Page<TalentDto.TalentListResponse> list(int limit, int skip, String keyword, Long subjectCategoryId);
 
     public TalentDto.ResponseBasic scrap(Long talentId);
+
+    public List<TalentDto.RelatedPostsResponse> getRelatedPosts(String SubjectName);
 }
