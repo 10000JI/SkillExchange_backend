@@ -11,10 +11,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.OncePerRequestFilter;
 import place.skillexchange.backend.exception.user.UserNotFoundException;
 import place.skillexchange.backend.user.entity.Refresh;
@@ -23,8 +21,6 @@ import place.skillexchange.backend.user.repository.RefreshRepository;
 import place.skillexchange.backend.user.repository.UserRepository;
 
 import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
 
 
 @Service
