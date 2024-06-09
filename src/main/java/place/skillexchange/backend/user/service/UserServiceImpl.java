@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileServiceImpl fileHandler;
-    private final TalentScrapRepository scrapRepository;
     private final TalentRepository talentRepository;
 
     /**

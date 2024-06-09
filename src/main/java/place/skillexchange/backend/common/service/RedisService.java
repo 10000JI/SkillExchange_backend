@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RedisService {
     private final Long clientAddressPostRequestWriteExpireDurationSec = 86400L;
-    private final RedisTemplate<String, Boolean> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public boolean isFirstIpRequest(String clientAddress, Long postId, Object reference) {
         String key = generateKey(clientAddress, postId, reference);
@@ -30,7 +30,7 @@ public class RedisService {
         String key = generateKey(userId, talentId, reference);
         log.debug("user post request key: {}", key);
 
-        redisTemplate.opsForValue().set(key, true);
+        redisTemplate.opsForValue().append(key, String.valueOf(talentId));
         redisTemplate.expire(key, clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
     }
 

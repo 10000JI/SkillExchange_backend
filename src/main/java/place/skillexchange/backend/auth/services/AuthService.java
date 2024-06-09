@@ -22,7 +22,8 @@ public interface AuthService {
 
     void updateUserActiveStatus(String id);
 
-    public ResponseEntity<UserDto.SignUpInResponse> login(UserDto.SignInRequest dto);
+    public UserDto.SignUpInResponse login(UserDto.SignInRequest dto,HttpServletRequest request,
+                                                          HttpServletResponse response);
 
     public UserDto.ResponseBasic withdraw(HttpServletRequest request, HttpServletResponse response);
 }

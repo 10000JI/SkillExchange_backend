@@ -2,13 +2,10 @@ package place.skillexchange.backend.auth.services;
 
 
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -21,18 +18,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import place.skillexchange.backend.exception.user.UserIdLoginException;
 import place.skillexchange.backend.user.dto.UserDto;
-import place.skillexchange.backend.user.entity.RefreshToken;
+import place.skillexchange.backend.user.entity.Refresh;
 import place.skillexchange.backend.user.entity.User;
 import place.skillexchange.backend.exception.user.UserNotFoundException;
 import place.skillexchange.backend.exception.user.UserTokenExpriedException;
+import place.skillexchange.backend.user.repository.RefreshRepository;
 import place.skillexchange.backend.user.repository.UserRepository;
 import place.skillexchange.backend.common.service.MailService;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,10 +36,10 @@ public class AuthServiceImpl implements AuthService{
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JwtService jwtService;
-    private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
     private final UserDetailsService userDetailsService;
+    private final RefreshRepository refreshRepository;
 
     /* 회원가입 ~ 로그인 까지 (JWT 생성) */
 
@@ -162,7 +157,8 @@ public class AuthServiceImpl implements AuthService{
      * 로그인
      */
     @Override
-    public ResponseEntity<UserDto.SignUpInResponse> login(UserDto.SignInRequest dto) {
+    public UserDto.SignUpInResponse login(UserDto.SignInRequest dto, HttpServletRequest request,
+                                                          HttpServletResponse response) {
         try {
             //authenticationManager가 authenticate() = 인증한다.
             authenticationManager.authenticate(
@@ -184,28 +180,19 @@ public class AuthServiceImpl implements AuthService{
 
         //accessToken 생성
         String accessToken = jwtService.generateAccessToken(user);
-        //refreshToken 생성
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(dto.getId());
+        response.setHeader("Authorization", "Bearer " + accessToken);
 
-        // 헤더에 access 토큰 추가
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + accessToken);
-
-        //쿠키에 refresh 토큰 추가
-        ResponseCookie responseCookie = ResponseCookie
-                .from("refreshToken", refreshToken.getRefreshToken())
-                .secure(true)
-                .httpOnly(true)
-                .path("/")
-                .sameSite("None")
+        //RefreshToken 생성 (이미 있어도 덮어쓰기 가능)
+        Refresh redis = Refresh.builder()
+                .refreshToken(UUID.randomUUID().toString())
+                .userId(user.getId())
                 .build();
-        headers.add(HttpHeaders.SET_COOKIE, responseCookie.toString());
+        refreshRepository.save(redis);
 
-        // ResponseEntity에 헤더만 설정하여 반환
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .headers(headers)
-                .body(new UserDto.SignUpInResponse(user, 200, "로그인 성공!"));
+        Cookie cookie = new Cookie("refreshToken", redis.getRefreshToken());
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+        return new UserDto.SignUpInResponse(user, 200, "로그인 성공!");
     }
 
     @Override

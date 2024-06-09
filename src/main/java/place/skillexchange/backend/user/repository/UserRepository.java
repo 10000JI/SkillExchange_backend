@@ -19,6 +19,11 @@ public interface UserRepository extends JpaRepository<User, String> {
     @EntityGraph(attributePaths = {"file"})
     Optional<User> findWithFileById(String userId);
 
+
+    //id를 가지고 User 조회 (lazy 로딩으로 n+1 해결)
+    @EntityGraph(attributePaths = {"authorities"})
+    Optional<User> findWithAuthoritiesById(String userId);
+
 /*    //id를 가지고 User 조회 (lazy 로딩으로 n+1 해결)
     @EntityGraph(attributePaths = {"authorities", "file"})
     @Query("select u from User u left join fetch u.file where u.id = :userId")

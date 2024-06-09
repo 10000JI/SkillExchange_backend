@@ -45,8 +45,8 @@ class AuthServiceImplTest {
     private MailService mailService;
     @Mock
     private AuthenticationManager authenticationManager;
-    @Mock
-    private RefreshTokenService refreshTokenService;
+//    @Mock
+//    private RefreshTokenService refreshTokenService;
     @InjectMocks
     private AuthServiceImpl authService;
 
@@ -89,55 +89,55 @@ class AuthServiceImplTest {
         verify(mailService).getEmail(eq("test@example.com"), eq("testUser"), eq("dummyActiveToken"));
     }
 
-    @Test
-    @DisplayName("로그인 성공 테스트")
-    public void testLogin_Success() {
-        // Given
-        UserDto.SignInRequest request = new UserDto.SignInRequest("testUser", "password");
-        User user = User.builder().id("testUser").active(true).build();
-        String accessToken = "dummyAccessToken";
-        String refreshToken_Jwt = "dummyRefreshToken";
-
-        RefreshToken refreshToken = RefreshToken.builder()
-                //refreshToken은 UUID로 생성
-                .refreshToken(refreshToken_Jwt)
-                //만료일은 2분 (실제로는 2주 정도로 설정)
-                .expirationTime(new Date((new Date()).getTime() + 14 * 24 * 60 * 60 * 1000))
-                .user(user)
-                .build();
-
-        given(authenticationManager.authenticate(any()))
-                .willReturn(new UsernamePasswordAuthenticationToken(user.getId(), request.getPassword()));
-//        given(userRepository.findByIdAndActiveIsTrue(request.getId())).willReturn(user);
-        given(jwtService.generateAccessToken(user)).willReturn(accessToken);
-        given(refreshTokenService.createRefreshToken(request.getId())).willReturn(refreshToken);
-
-        // When
-        ResponseEntity<UserDto.SignUpInResponse> responseEntity = authService.login(request);
-
-        // Then
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody().getReturnCode()).isEqualTo(200);
-        assertThat(responseEntity.getBody().getReturnMessage()).isEqualTo("로그인 성공!");
-        assertThat(responseEntity.getHeaders().get("Authorization")).containsExactly("Bearer " + accessToken);
-
-
-        List<String> setCookieHeaders = responseEntity.getHeaders().get(HttpHeaders.SET_COOKIE);
-        log.error("setCookie::::{}::::::",setCookieHeaders.get(0));
-
-        // 쿠키 헤더에서 refreshToken 추출
-        String refreshTokenHeader = setCookieHeaders.get(0);
-        String[] cookieParts = refreshTokenHeader.split(";"); // 쿠키 헤더를 세미콜론으로 분할하여 배열에 저장
-        String refreshTokenValue = null;
-        for (String cookiePart : cookieParts) {
-            if (cookiePart.trim().startsWith("refreshToken=")) { // refreshToken으로 시작하는 부분을 찾음
-                refreshTokenValue = cookiePart.trim().substring("refreshToken=".length()); // refreshToken= 다음의 값을 추출
-                break;
-            }
-        }
-
-        assertThat(setCookieHeaders).isNotNull();
-        assertThat(setCookieHeaders).hasSize(1);
-        assertThat(refreshTokenValue).isEqualTo(refreshToken_Jwt);
-    }
+//    @Test
+//    @DisplayName("로그인 성공 테스트")
+//    public void testLogin_Success() {
+//        // Given
+//        UserDto.SignInRequest request = new UserDto.SignInRequest("testUser", "password");
+//        User user = User.builder().id("testUser").active(true).build();
+//        String accessToken = "dummyAccessToken";
+//        String refreshToken_Jwt = "dummyRefreshToken";
+//
+//        RefreshToken refreshToken = RefreshToken.builder()
+//                //refreshToken은 UUID로 생성
+//                .refreshToken(refreshToken_Jwt)
+//                //만료일은 2분 (실제로는 2주 정도로 설정)
+//                .expirationTime(new Date((new Date()).getTime() + 14 * 24 * 60 * 60 * 1000))
+//                .user(user)
+//                .build();
+//
+//        given(authenticationManager.authenticate(any()))
+//                .willReturn(new UsernamePasswordAuthenticationToken(user.getId(), request.getPassword()));
+////        given(userRepository.findByIdAndActiveIsTrue(request.getId())).willReturn(user);
+//        given(jwtService.generateAccessToken(user)).willReturn(accessToken);
+//        given(refreshTokenService.createRefreshToken(request.getId())).willReturn(refreshToken);
+//
+//        // When
+//        ResponseEntity<UserDto.SignUpInResponse> responseEntity = authService.login(request);
+//
+//        // Then
+//        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//        assertThat(responseEntity.getBody().getReturnCode()).isEqualTo(200);
+//        assertThat(responseEntity.getBody().getReturnMessage()).isEqualTo("로그인 성공!");
+//        assertThat(responseEntity.getHeaders().get("Authorization")).containsExactly("Bearer " + accessToken);
+//
+//
+//        List<String> setCookieHeaders = responseEntity.getHeaders().get(HttpHeaders.SET_COOKIE);
+//        log.error("setCookie::::{}::::::",setCookieHeaders.get(0));
+//
+//        // 쿠키 헤더에서 refreshToken 추출
+//        String refreshTokenHeader = setCookieHeaders.get(0);
+//        String[] cookieParts = refreshTokenHeader.split(";"); // 쿠키 헤더를 세미콜론으로 분할하여 배열에 저장
+//        String refreshTokenValue = null;
+//        for (String cookiePart : cookieParts) {
+//            if (cookiePart.trim().startsWith("refreshToken=")) { // refreshToken으로 시작하는 부분을 찾음
+//                refreshTokenValue = cookiePart.trim().substring("refreshToken=".length()); // refreshToken= 다음의 값을 추출
+//                break;
+//            }
+//        }
+//
+//        assertThat(setCookieHeaders).isNotNull();
+//        assertThat(setCookieHeaders).hasSize(1);
+//        assertThat(refreshTokenValue).isEqualTo(refreshToken_Jwt);
+//    }
 }

@@ -14,13 +14,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.OncePerRequestFilter;
 import place.skillexchange.backend.exception.user.UserNotFoundException;
-import place.skillexchange.backend.user.entity.RefreshToken;
+import place.skillexchange.backend.user.entity.Refresh;
 import place.skillexchange.backend.user.entity.User;
+import place.skillexchange.backend.user.repository.RefreshRepository;
 import place.skillexchange.backend.user.repository.UserRepository;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -30,11 +34,9 @@ public class AuthFilterService extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    private final UserDetailsService userDetailsService;
-
-    private final RefreshTokenService refreshTokenService;
-
     private final UserRepository userRepository;
+
+    private final RefreshRepository refreshRepository;
 
 
     /**
@@ -79,18 +81,16 @@ public class AuthFilterService extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+
     private void handleExpiredToken(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String refreshTokenValue = extractRefreshTokenFromCookie(request);
-        if (refreshTokenValue != null) {
-            RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(refreshTokenValue);
-            if (refreshToken != null) {
-                //User user = refreshToken.getUser();
-                User user = userRepository.findById(refreshToken.getUser().getId()).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        String refreshToken = extractRefreshTokenFromCookie(request);
+        if (refreshToken != null) {
+            Refresh refresh = refreshRepository.findByRefreshToken(refreshToken);
+            if (refresh != null) {
+                User user = userRepository.findWithAuthoritiesById(refresh.getUserId()).orElseThrow(() -> UserNotFoundException.EXCEPTION);
                 String accessToken = jwtService.generateAccessToken(user);
                 response.setHeader("Authorization", "Bearer " + accessToken);
 
-//                //UserDetailsService에서 loadUserByUsername 메서드로 사용자 세부 정보 검색
-//                UserDetails userDetails = userDetailsService.loadUserByUsername(user.getId());
                 UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                         user.getId(),
                         "",
@@ -127,10 +127,6 @@ public class AuthFilterService extends OncePerRequestFilter {
     }
 
     private void authenticateUser(String jwt, HttpServletRequest request, HttpServletResponse response) {
-//        // jwt의 사용자 이름 추출
-//        String id = jwtService.extractUsername(jwt);
-//        //UserDetailsService에서 loadUserByUsername 메서드로 사용자 세부 정보 검색
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(id);  //db를 방문할 필요가 없음 , jwt 서명만 하면 된다
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                 jwtService.extractUsername(jwt),
                 "",

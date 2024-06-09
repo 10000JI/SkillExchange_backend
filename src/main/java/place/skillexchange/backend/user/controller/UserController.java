@@ -67,8 +67,9 @@ public class UserController {
      */
     @Operation(summary = "사용자 로그인 API", description = "활성화 토큰 검증 이후 로그인이 가능하다.")
     @PostMapping("/signIn")
-    public ResponseEntity<UserDto.SignUpInResponse> login(@RequestBody UserDto.SignInRequest dto) {
-        return authService.login(dto);
+    public UserDto.SignUpInResponse login(@RequestBody UserDto.SignInRequest dto, HttpServletRequest request,
+                                                          HttpServletResponse response) {
+        return authService.login(dto,request,response);
     }
 
     /**
