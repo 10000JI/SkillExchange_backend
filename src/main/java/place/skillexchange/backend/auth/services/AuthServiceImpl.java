@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import place.skillexchange.backend.common.util.RedisUtil;
+import place.skillexchange.backend.common.util.SecurityUtil;
 import place.skillexchange.backend.exception.user.UserIdLoginException;
 import place.skillexchange.backend.user.dto.UserDto;
 import place.skillexchange.backend.user.entity.Refresh;
@@ -27,6 +29,7 @@ import place.skillexchange.backend.user.repository.UserRepository;
 import place.skillexchange.backend.common.service.MailService;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -40,6 +43,8 @@ public class AuthServiceImpl implements AuthService{
     private final MailService mailService;
     private final UserDetailsService userDetailsService;
     private final RefreshRepository refreshRepository;
+    private final SecurityUtil securityUtil;
+    private final RedisUtil redisUtil;
 
     /* 회원가입 ~ 로그인 까지 (JWT 생성) */
 
@@ -196,7 +201,17 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public UserDto.ResponseBasic withdraw(HttpServletRequest request, HttpServletResponse response) {
-        return null;
+    public UserDto.ResponseBasic logout(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        Date date = jwtService.extractExpiration(token);
+        Long now = new Date().getTime();
+        Long expiration = date.getTime() - now;
+        String id = securityUtil.getCurrentMemberUsername();
+        if (refreshRepository.findById(id).isPresent()) { //리프레시 토큰 삭제
+            refreshRepository.deleteById(id);
+        }
+
+        redisUtil.setBlackList(token, "logout", Duration.ofMillis(expiration)); //accessToken 블랙리스트 생성
+        return new UserDto.ResponseBasic(200, "로그아웃 되었습니다.");
     }
 }

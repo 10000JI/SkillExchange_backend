@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @NoArgsConstructor
 @Getter
 @Builder
-@RedisHash(value = "refresh", timeToLive = 1209600) //2주
+@RedisHash(value = "refresh", timeToLive = 180) //2주
 public class Refresh {
     @Id
     private String userId;

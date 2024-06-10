@@ -143,10 +143,10 @@ public class UserController {
     }
 
     /**
-     * 회원 탈퇴
+     * 로그아웃
      */
-    @DeleteMapping("/withdraw")
-    public UserDto.ResponseBasic withdraw(HttpServletRequest request, HttpServletResponse response) {
-        return authService.withdraw(request, response);
+    @PatchMapping("/logout")
+    public UserDto.ResponseBasic logout(HttpServletRequest request) {
+        return authService.logout(request);
     }
 }

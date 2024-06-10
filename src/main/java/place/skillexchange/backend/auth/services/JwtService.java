@@ -134,7 +134,7 @@ public class JwtService {
     /**
      * 토큰에서 만료 일자 클레임을 추출하여 반환
      */
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractAllClaims(token).getExpiration();
     }
 

@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-
 public class RedisService {
     private final Long clientAddressPostRequestWriteExpireDurationSec = 86400L;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -34,7 +33,6 @@ public class RedisService {
         redisTemplate.expire(key, clientAddressPostRequestWriteExpireDurationSec, TimeUnit.SECONDS);
     }
 
-    // key 형식 : 'client Address + postId' ->  '\xac\xed\x00\x05t\x00\x0f127.0.0.1 + 500'
     private String generateKey(String userId, Long talentId, Object reference) {
         String objectType;
         if (reference instanceof Notice) {

@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
+import place.skillexchange.backend.common.util.RedisUtil;
 import place.skillexchange.backend.exception.user.UserNotFoundException;
 import place.skillexchange.backend.user.entity.Refresh;
 import place.skillexchange.backend.user.entity.User;
@@ -33,6 +34,8 @@ public class AuthFilterService extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     private final RefreshRepository refreshRepository;
+
+    private final RedisUtil redisUtil;
 
 
     /**
@@ -64,15 +67,24 @@ public class AuthFilterService extends OncePerRequestFilter {
 
 
         if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            String blackListValue = (String) redisUtil.getBlackList(jwt);
+            //accessToken이 블랙리스트에 등록되었는지 확인
+            if (blackListValue != null && blackListValue.equals("logout")) {
+                // 블랙리스트에 등록된 토큰인 경우 예외 처리
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User has been logged out");
+                return;
+            }
+
             //accessToken이 만료되었다면
-            if (jwtService.isTokenExpired(jwt)) {
+            if ( jwtService.isTokenExpired(jwt)) {
                 //쿠키의 refreshToken과 db에 저장된 refreshToken의 만료일을 확인하고 accessToken 재발급 / 만료되면 재로그인 exception
                 handleExpiredToken(request, response);
             } else {
-                //accessToken이 만료되지 않았다면 유효한지 검증
+                //accessToken이 만료되지 않았다면 인증정보 등록
                 authenticateUser(jwt, request, response);
             }
         }
+
         //체인 내의 다음 필터를 호출
         filterChain.doFilter(request, response);
     }

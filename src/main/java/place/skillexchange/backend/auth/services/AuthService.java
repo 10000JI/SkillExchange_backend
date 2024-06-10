@@ -3,7 +3,6 @@ package place.skillexchange.backend.auth.services;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import place.skillexchange.backend.user.dto.UserDto;
@@ -25,5 +24,5 @@ public interface AuthService {
     public UserDto.SignUpInResponse login(UserDto.SignInRequest dto,HttpServletRequest request,
                                                           HttpServletResponse response);
 
-    public UserDto.ResponseBasic withdraw(HttpServletRequest request, HttpServletResponse response);
+    public UserDto.ResponseBasic logout(HttpServletRequest request);
 }
