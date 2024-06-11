@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -18,12 +19,12 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import place.skillexchange.backend.auth.services.AuthFilterService;
-import place.skillexchange.backend.auth.services.CsrfCookieFilterService;
 import place.skillexchange.backend.exception.user.CustomAccessDeniedHandler;
 import place.skillexchange.backend.exception.user.CustomAuthenticationEntryPoint;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,8 +38,6 @@ public class SecurityConfig {
      */
 
     private final AuthFilterService authFilterService;
-
-    private final CsrfCookieFilterService csrfCookieFilterService;
 
     private final AuthenticationProvider authenticationProvider;
 
@@ -62,22 +61,21 @@ public class SecurityConfig {
                         //허용할 출처(도메인)를 설정
                         config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
                         //허용할 HTTP 메소드를 설정
-                        config.setAllowedMethods(Collections.singletonList("*"));
+                        config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH"));
                         //인증 정보 허용 여부를 설정
                         config.setAllowCredentials(true);
                         //허용할 헤더를 설정
-                        config.setAllowedHeaders(Collections.singletonList("*"));
+                        config.setAllowedHeaders(List.of("*"));
                         config.setExposedHeaders(Arrays.asList("Authorization"));
                         //CORS 설정 캐시로 사용할 시간을 설정
                         config.setMaxAge(3600L);
                         return config;
                     }
-                })).csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler)
-                        .ignoringRequestMatchers("/v1/user/**", "/v1/file/**", "/v1/notices/register", "/v1/comment/**", "/v1/notices/**", "/v1/talent/**", "/swagger-ui/**", "/v3/api-docs/**")
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                }))
+                .csrf(AbstractHttpConfigurer::disable)
                 //DaoAuthenticationProvider의 세부 내역을 AuthenticationProvider 빈을 만들어 정의했으므로 인증을 구성해줘야 한다.
                 .authenticationProvider(authenticationProvider)
-                .addFilterAfter(csrfCookieFilterService, BasicAuthenticationFilter.class)
+                //.addFilterAfter(csrfCookieFilterService, BasicAuthenticationFilter.class)
                 .addFilterBefore(authFilterService, UsernamePasswordAuthenticationFilter.class)
                 //authFilterService가 인증 전에 실행되어 항상 검증되기 때문에 requestMatchers의 authenticated()과 permitAll()은 영향 X
                 //하지만 코드 가독성을 위해 requestMatchers를 사용해 명시해주자

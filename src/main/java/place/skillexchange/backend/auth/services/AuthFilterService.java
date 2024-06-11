@@ -62,7 +62,7 @@ public class AuthFilterService extends OncePerRequestFilter {
             return;
         }
 
-        // authHeader의 `Bearer `를 제외한 문자열 jwt에 담은
+        // authHeader의 `Bearer `를 제외한 문자열 jwt에 담음
         jwt = authHeader.substring(7);
 
 

@@ -196,6 +196,10 @@ public class AuthServiceImpl implements AuthService{
 
         Cookie cookie = new Cookie("refreshToken", redis.getRefreshToken());
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setAttribute("SameSite", "None"); //쿠키에 samesite 속성 추가
+
         response.addCookie(cookie);
         return new UserDto.SignUpInResponse(user, 200, "로그인 성공!");
     }

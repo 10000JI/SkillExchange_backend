@@ -17,6 +17,10 @@ public class CookieUtil {
         Cookie cookie = new Cookie(getCookieName(postId,reference), String.valueOf(postId));
         cookie.setMaxAge(getExpirationInSeconds(24 * 60 * 60)); // 24시간 = 24 * 60 * 60 초
         cookie.setHttpOnly(true); // 서버에서만 조작 가능
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setAttribute("SameSite", "None"); //쿠키에 samesite 속성 추가
+
         return cookie;
     }
 
