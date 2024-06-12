@@ -11,9 +11,11 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     username: root
     password: root1234
+#  mvc:
+#    static-path-pattern: /static/**
 
 
-#  sql:
+  #  sql:
 #    init:
 #      mode: always
 

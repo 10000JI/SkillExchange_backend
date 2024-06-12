@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.web.bind.annotation.BindParam;
 import place.skillexchange.backend.talent.entity.Talent;
+import place.skillexchange.backend.user.entity.AuthProvider;
 import place.skillexchange.backend.user.entity.Authority;
 import place.skillexchange.backend.file.entity.File;
 import place.skillexchange.backend.user.entity.User;
@@ -59,6 +60,7 @@ public class UserDto {
                     .email(email)
                     .password(password)
                     .authorities(Collections.singleton(authority))
+                    .provider(AuthProvider.LOCAL)
                     .build();
             return user;
         }
@@ -287,5 +289,16 @@ public class UserDto {
             this.content = talent.getContent();
             this.title = talent.getTitle();
         }
+    }
+
+    @Data
+    public static class KakaoTokenDto {
+        private String access_token;
+        private String token_type;
+        private String refresh_token;
+        private String id_token;
+        private int expires_in;
+        private int refresh_token_expires_in;
+        private String scope;
     }
 }

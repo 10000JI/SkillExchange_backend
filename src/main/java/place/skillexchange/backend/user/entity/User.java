@@ -28,10 +28,10 @@ public class User implements UserDetails {
     @Column(name = "user_id", length = 50, unique = true, nullable = false)
     private String id;
 
-    @Column(name = "password", length = 100, nullable = false)
+    @Column(name = "password", length = 100)
     private String password;
 
-    @Column(name = "email", length = 50, nullable = false)
+    @Column(name = "email", length = 50)
     private String email;
 
     @Column(name = "active")
@@ -54,7 +54,6 @@ public class User implements UserDetails {
     @Column(name = "my_subject", length = 50)
     private String mySubject;
 
-
     /**
      * Security에서 권한 정보 로드할 때 LAZY(지연)로딩이 아니라 EAGER(즉시)로딩으로 설정해야 함
      */
@@ -64,7 +63,6 @@ public class User implements UserDetails {
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
-
 
     /**
      * User와 File은 1:1 관계
@@ -77,6 +75,10 @@ public class User implements UserDetails {
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private Set<TalentScrap> talentScraps = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider", length = 20)
+    private AuthProvider provider;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

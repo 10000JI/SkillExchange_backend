@@ -19,6 +19,8 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import place.skillexchange.backend.auth.services.AuthFilterService;
+import place.skillexchange.backend.auth.services.OAuth2AuthenticationSuccessHandler;
+import place.skillexchange.backend.auth.services.UserOAuth2Service;
 import place.skillexchange.backend.exception.user.CustomAccessDeniedHandler;
 import place.skillexchange.backend.exception.user.CustomAuthenticationEntryPoint;
 
@@ -42,13 +44,18 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
 
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
     private final CustomAccessDeniedHandler accessDeniedHandler;
+
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+    private final UserOAuth2Service userOAuth2Service;
 
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
-        requestHandler.setCsrfRequestAttributeName("_csrf");
+//        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+//        requestHandler.setCsrfRequestAttributeName("_csrf");
 
         http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -90,6 +97,11 @@ public class SecurityConfig {
                         .requestMatchers("/v1/notices/register").hasRole("ADMIN")
                         .requestMatchers("/v1/user/**", "/v1/file/**", "/v1/notices/{noticeId}", "/v1/comment/**", "/v1/subjectCategory/**", "/v1/place/**", "/v1/talent/**","/v1/profile/get","/profile", "/actuator/health","/health").permitAll())
                 .formLogin(Customizer.withDefaults())
+                .oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("/login-success") // OAuth2 로그인 페이지 경로 설정
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .userInfoEndpoint(userInfoEndpointConfig
+                                -> userInfoEndpointConfig.userService(userOAuth2Service)))
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
