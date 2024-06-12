@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.web.bind.annotation.BindParam;
 import place.skillexchange.backend.talent.entity.Talent;
 import place.skillexchange.backend.user.entity.AuthProvider;
 import place.skillexchange.backend.user.entity.Authority;
@@ -60,7 +59,7 @@ public class UserDto {
                     .email(email)
                     .password(password)
                     .authorities(Collections.singleton(authority))
-                    .provider(AuthProvider.LOCAL)
+                    .provider(AuthProvider.local)
                     .build();
             return user;
         }
