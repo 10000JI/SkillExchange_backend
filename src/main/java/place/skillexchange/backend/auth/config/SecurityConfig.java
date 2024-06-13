@@ -98,7 +98,6 @@ public class SecurityConfig {
                         .requestMatchers("/v1/user/**", "/v1/file/**", "/v1/notices/{noticeId}", "/v1/comment/**", "/v1/subjectCategory/**", "/v1/place/**", "/v1/talent/**","/v1/profile/get","/profile", "/actuator/health","/health").permitAll())
                 .formLogin(Customizer.withDefaults())
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/login-success") // OAuth2 로그인 페이지 경로 설정
                         .successHandler(oAuth2AuthenticationSuccessHandler)
                         .userInfoEndpoint(userInfoEndpointConfig
                                 -> userInfoEndpointConfig.userService(userOAuth2Service)))
