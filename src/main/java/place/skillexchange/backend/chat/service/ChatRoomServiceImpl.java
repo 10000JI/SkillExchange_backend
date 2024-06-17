@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import place.skillexchange.backend.chat.dto.ChatDto;
 import place.skillexchange.backend.chat.entity.ChatMessage;
 import place.skillexchange.backend.chat.entity.ChatRoom;
@@ -49,8 +50,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         return new ChatDto.CreateChatRoomResponse(roomMaker.getId(),guest.getId(), newRoom.getId());
     }
 
-    @Override // 15개만 채팅내역 보내주기
-    public ChatDto.ChatRoomInfoResponse chatRoomInfo(String roomId) {
+    @Override // 15개씩 채팅내역 보내주기
+    public ChatDto.ChatRoomInfoResponse chatRoomInfo(String roomId, int page, int size) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> ChatRoomNotFoundException.EXCEPTION);
         ChatDto.ChatRoomInfoResponse chatRoomInfoResponse = new ChatDto.ChatRoomInfoResponse(chatRoom);
 
@@ -60,7 +61,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             throw ChatRoomAccessDeniedException.EXCEPTION;
         }
 
-        List<ChatMessage> lastestChatMessages = findChatMessagesWithPaging(1, roomId);
+        List<ChatMessage> lastestChatMessages = findChatMessagesWithPaging(page, size, roomId);
         List<ChatDto.ChatMessageInfo> chatMessageInfos = new ArrayList<>();
 
         for (ChatMessage chatMessage : lastestChatMessages) {
@@ -76,12 +77,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         return chatRoomRepository.findById(chatRoomId).orElseThrow();
     }
 
-    public List<ChatMessage> findChatMessagesWithPaging(int page, String roomId) {
+    public List<ChatMessage> findChatMessagesWithPaging(int page, int size, String roomId) {
 
-        int pagePerCount = 15;
-
-        Sort sort = Sort.by("createdAt").ascending();
-        PageRequest pageRequest = PageRequest.of(page - 1, pagePerCount, sort);
+        Sort sort = Sort.by("createdAt").descending();
+        PageRequest pageRequest = PageRequest.of(page - 1, size, sort);
 
         List<ChatMessage> result = chatMessageRepository.findListsByRoomId(roomId, pageRequest).getContent();
 

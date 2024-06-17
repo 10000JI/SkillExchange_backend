@@ -20,8 +20,9 @@ public class ChatRoomController {
     }
 
     @GetMapping("/message") //채팅방 정보 요청 (최신 15개씩, 무한스크롤 구현)
-    public ChatDto.ChatRoomInfoResponse chatRoomInfo(@RequestBody ChatDto.ChatRoomInfoRequest request) {
-        return chatRoomService.chatRoomInfo(request.getRoomId());
+    public ChatDto.ChatRoomInfoResponse chatRoomInfo(@RequestBody ChatDto.ChatRoomInfoRequest request,@RequestParam int page,
+                                                     @RequestParam int size) {
+        return chatRoomService.chatRoomInfo(request.getRoomId(), page, size);
     }
 
 }
