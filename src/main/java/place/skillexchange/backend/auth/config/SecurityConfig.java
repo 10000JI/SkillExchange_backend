@@ -18,6 +18,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import place.skillexchange.backend.auth.services.AuthFilterService;
 import place.skillexchange.backend.auth.services.OAuth2AuthenticationSuccessHandler;
 import place.skillexchange.backend.auth.services.UserOAuth2Service;
@@ -60,25 +61,7 @@ public class SecurityConfig {
         http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 //CorsConfigurationSource 인터페이스를 구현하는 익명 클래스 생성하여 getCorsConfiguration() 메소드 재정의
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                    //getCorsConfiguration() 메소드에서 CorsConfiguration 객체를 생성하고 필요한 설정들을 추가
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration config = new CorsConfiguration();
-                        //허용할 출처(도메인)를 설정
-                        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                        //허용할 HTTP 메소드를 설정
-                        config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH"));
-                        //인증 정보 허용 여부를 설정
-                        config.setAllowCredentials(true);
-                        //허용할 헤더를 설정
-                        config.setAllowedHeaders(List.of("*"));
-                        config.setExposedHeaders(Arrays.asList("Authorization"));
-                        //CORS 설정 캐시로 사용할 시간을 설정
-                        config.setMaxAge(3600L);
-                        return config;
-                    }
-                }))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 //DaoAuthenticationProvider의 세부 내역을 AuthenticationProvider 빈을 만들어 정의했으므로 인증을 구성해줘야 한다.
                 .authenticationProvider(authenticationProvider)
@@ -95,7 +78,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/v1/notices/{noticeId}").hasRole("ADMIN")
                         .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/v1/notices/register").hasRole("ADMIN")
-                        .requestMatchers("/v1/user/**", "/v1/file/**", "/v1/notices/{noticeId}", "/v1/comment/**", "/v1/subjectCategory/**", "/v1/place/**", "/v1/talent/**","/v1/profile/get","/profile", "/actuator/health","/health").permitAll())
+                        .requestMatchers("/v1/user/**", "/v1/file/**", "/v1/notices/{noticeId}", "/v1/comment/**", "/v1/subjectCategory/**", "/v1/place/**", "/v1/talent/**","/v1/profile/get","/profile", "/actuator/health","/health","/v1/chatRoom/**","/chat/inbox/**").permitAll())
                 .formLogin(Customizer.withDefaults())
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2AuthenticationSuccessHandler)
@@ -105,4 +88,19 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://apic.app")); // Add https://apic.app here
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

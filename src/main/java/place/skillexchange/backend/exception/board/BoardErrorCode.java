@@ -32,8 +32,6 @@ public enum BoardErrorCode implements BaseErrorCode {
     @ExplainError("부모 카테고리로 재능교환 게시물을 찾으려고 하는 경우 (자식 카테고리 별 재능교환 게시물 목록 출력 가능)")
     SUBJECT_CATEGORY_BAD_REQUEST(BAD_REQUEST, "SUBJECT_CATEGORY_400_1", "선택한 카테고리에 대한 게시물을 찾을 수 없습니다. 부모 카테고리에 속한 게시물은 확인할 수 없습니다. 자식 카테고리로 다시 시도해주세요.");
 
-
-
     private Integer status;
     private String code;
     private String reason;

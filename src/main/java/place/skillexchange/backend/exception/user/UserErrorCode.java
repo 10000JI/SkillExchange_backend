@@ -15,13 +15,6 @@ import static place.skillexchange.backend.common.consts.ConstFields.*;
 @AllArgsConstructor
 public enum UserErrorCode implements BaseErrorCode {
 
-//    @ExplainError("회원가입시에 유효성 검사 실시할 때 발생하는 오류")
-//    PASSWORD_NOT_EQUAL(BAD_REQUEST, "USER_400_1", "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
-//    ID_ALREADY_EXISTS(BAD_REQUEST, "USER_400_2", "이미 존재하는 아이디입니다."),
-//    EMAIL_ALREADY_EXISTS(BAD_REQUEST, "USER_400_3", "이미 존재하는 이메일입니다."),
-//    ID_CANNOT_BE_MODIFIED(BAD_REQUEST, "USER_400_4", "아이디는 임의로 조정할 수 없습니다."),
-//    NOW_PASSWORD_NOT_EQUAL(BAD_REQUEST, "USER_400_5", "현재 비밀번호를 정확히 입력해주세요."),
-//    NEW_PASSWORD_NOT_EQUAL(BAD_REQUEST, "USER_400_6", "새 비밀번호와 비밀번호 확인이 일치하지 않습니다."),
     @ExplainError("인증 및 권한이 없는 경우")
     USER_TOKEN_EXPIRED(UNAUTHORIZED, "USER_401_1", "토큰이 만료 되었습니다."),
     REFRESHTOKEN_NOT_FOUND(UNAUTHORIZED, "USER_401_2", "Refresh Token을 찾을 수 없습니다."),
