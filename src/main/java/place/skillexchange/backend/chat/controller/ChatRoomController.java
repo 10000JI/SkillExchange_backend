@@ -19,13 +19,13 @@ public class ChatRoomController {
         return chatRoomService.createChatRoomForPersonal(request);
     }
 
-    @GetMapping("/message") //채팅방 정보 요청 (최신 15개씩, 무한스크롤 구현)
+    @GetMapping("/message") //채팅방 메세지 목록 요청 (최신 15개씩, 무한스크롤 구현)
     public ChatDto.ChatRoomInfoResponse chatRoomInfo(@RequestBody ChatDto.ChatRoomInfoRequest request,
                                                      @RequestParam int page, @RequestParam int size) {
         return chatRoomService.chatRoomInfo(request.getRoomId(), page, size);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/list") //채팅방 목록 (최신 7개씩, 무한스크롤 구현)
     public ChatDto.ChatRoomListReponse getChatRoomList(@RequestParam int page, @RequestParam int size) {
         return chatRoomService.getChatRoomList(page,size);
     }
