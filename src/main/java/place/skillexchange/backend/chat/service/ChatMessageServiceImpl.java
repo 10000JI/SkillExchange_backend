@@ -18,7 +18,6 @@ public class ChatMessageServiceImpl implements ChatMessageService{
     @Override
     public ChatMessage createChatMessage(ChatDto.ChatMessageDto chatMessageDto) {
         ChatMessage chatMessage = chatMessageDto.toEntity();
-        chatMessage.setCreatedAt(LocalDateTime.now());
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessage.getRoomId()).orElseThrow();
         chatRoom.setLastChatMesg(chatMessage);
         chatRoomRepository.save(chatRoom);

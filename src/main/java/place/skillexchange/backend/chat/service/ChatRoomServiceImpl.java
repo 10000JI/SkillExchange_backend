@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import place.skillexchange.backend.chat.dto.ChatDto;
 import place.skillexchange.backend.chat.entity.ChatMessage;
 import place.skillexchange.backend.chat.entity.ChatRoom;
@@ -17,7 +16,6 @@ import place.skillexchange.backend.exception.user.UserNotFoundException;
 import place.skillexchange.backend.user.entity.User;
 import place.skillexchange.backend.user.repository.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -41,8 +39,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         User guest = userRepository.findById(chatRoomRequest.getGuestId()).orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         ChatRoom newRoom  = ChatRoom.create();
-        newRoom.setCreatedAt(LocalDateTime.now());
-
         newRoom.addMembers(roomMaker, guest);
 
         chatRoomRepository.save(newRoom);
@@ -77,8 +73,34 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         return chatRoomRepository.findById(chatRoomId).orElseThrow();
     }
 
-    public List<ChatMessage> findChatMessagesWithPaging(int page, int size, String roomId) {
+    @Override// 채팅방 리스트 7개 전달
+    public ChatDto.ChatRoomListReponse getChatRoomList(int page, int size) {
+        String userId = securityUtil.getCurrentMemberUsername();
 
+        List<ChatRoom> chatRooms = findChatRoomsWithPaging(page, size, userId);
+        List<ChatDto.ChatRoomInfoResponse> chatRoomInfo = new ArrayList<>();
+        for (ChatRoom chatRoom : chatRooms) {
+            chatRoomInfo.add(new ChatDto.ChatRoomInfoResponse(chatRoom));
+        }
+        ChatDto.ChatRoomListReponse info = ChatDto.ChatRoomListReponse.builder()
+                .page(page)
+                .count(chatRooms.size())
+                .reqUserId(userId)
+                .chatRooms(chatRoomInfo)
+                .build();
+        return info;
+    }
+
+    private List<ChatRoom> findChatRoomsWithPaging(int page, int size, String userId) {
+        Sort sort = Sort.by("lastChatMesg.createdAt").descending();
+        PageRequest pageRequest = PageRequest.of(page - 1, size, sort);
+
+        List<ChatRoom> chatRooms = chatRoomRepository.findByChatRoomMembersId(userId, pageRequest).getContent();
+
+        return chatRooms;
+    }
+
+    public List<ChatMessage> findChatMessagesWithPaging(int page, int size, String roomId) {
         Sort sort = Sort.by("createdAt").descending();
         PageRequest pageRequest = PageRequest.of(page - 1, size, sort);
 

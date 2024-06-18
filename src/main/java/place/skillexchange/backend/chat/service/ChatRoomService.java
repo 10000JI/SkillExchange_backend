@@ -11,4 +11,6 @@ public interface ChatRoomService {
     public ChatDto.ChatRoomInfoResponse chatRoomInfo(String roomId, int page, int size);
 
     public ChatRoom findById(String chatRoomId);
+
+    public ChatDto.ChatRoomListReponse getChatRoomList(int page, int size);
 }

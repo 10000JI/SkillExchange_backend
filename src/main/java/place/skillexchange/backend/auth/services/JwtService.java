@@ -1,9 +1,6 @@
 package place.skillexchange.backend.auth.services;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import place.skillexchange.backend.exception.user.UserTokenExpriedException;
 import place.skillexchange.backend.user.entity.Authority;
 
 import javax.crypto.SecretKey;
@@ -168,5 +166,21 @@ public class JwtService {
             grantedAuthorities.add(new SimpleGrantedAuthority(st.nextToken()));
         }
         return grantedAuthorities;
+    }
+
+    public void validateToken(String token) {
+        try {
+            Jwts.parser()
+                    //verifyWith(): key 같은 값을 보냄
+                    .verifyWith(getSignInKey())
+                    .build()
+                    //parseSignedClaims(): 받은 JWT 토큰 보냄
+                    .parseSignedClaims(token)
+                    //JWT 바디 값을 읽어보자, 특정 값을 나타내는 토큰 값이라면 헤더에서 서명 부분을 읽고 싶지 않은 것이다
+                    //getPayload() 메소드에서 claims를 가져옴
+                    .getPayload();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw UserTokenExpriedException.EXCEPTION;
+        }
     }
 }

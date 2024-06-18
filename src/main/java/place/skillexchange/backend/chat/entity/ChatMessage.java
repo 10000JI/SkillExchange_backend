@@ -6,6 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "ChatMessage")
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EntityListeners(value = {AuditingEntityListener.class})
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatMessage {
@@ -33,8 +36,7 @@ public class ChatMessage {
     @Column(name = "message")
     private String message;
 
-    @Column(name = "createdAt")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @Column(name = "createdAt", updatable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 }

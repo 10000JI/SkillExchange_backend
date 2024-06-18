@@ -41,7 +41,7 @@ public class ChatDto {
     }
 
     /**
-     * 채팅방 채팅방 정보 요청 dto
+     * 채팅방 메세지 요청 dto
      */
     @Getter
     public static class ChatRoomInfoRequest {
@@ -49,7 +49,7 @@ public class ChatDto {
     }
 
     /**
-     * 채팅방 채팅방 정보 요청 성공시 응답 dto
+     * 채팅방 메세지 요청 성공시 응답 dto
      */
     @Data
     public static class ChatRoomInfoResponse {
@@ -119,8 +119,21 @@ public class ChatDto {
                     .roomId(roomId)
                     .authorId(authorId)
                     .message(message)
+                    .createdAt(LocalDateTime.now())
                     .build();
             return chatMessage;
         }
+    }
+
+    /**
+     * 채팅방 목록 요청 성공시 응답 dto
+     */
+    @Data
+    @Builder
+    public static class ChatRoomListReponse {
+        private int page;
+        private int count;
+        private String reqUserId;
+        private List<ChatRoomInfoResponse> chatRooms;
     }
 }

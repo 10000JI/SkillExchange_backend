@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import place.skillexchange.backend.user.entity.User;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @DynamicUpdate
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EntityListeners(value = {AuditingEntityListener.class})
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatRoom {
@@ -36,7 +38,7 @@ public class ChatRoom {
             inverseJoinColumns = @JoinColumn(name = "userId"))
     private Set<User> chatRoomMembers = new HashSet<>();
 
-    @Column(name = "createdAt")
+    @Column(name = "createdAt", updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
