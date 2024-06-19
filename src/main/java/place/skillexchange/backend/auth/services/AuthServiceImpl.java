@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -28,12 +29,17 @@ import place.skillexchange.backend.user.repository.RefreshRepository;
 import place.skillexchange.backend.user.repository.UserRepository;
 import place.skillexchange.backend.common.service.MailService;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.Duration;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService{
 
     private final PasswordEncoder passwordEncoder;
@@ -197,6 +203,8 @@ public class AuthServiceImpl implements AuthService{
         Cookie cookie = new Cookie("refreshToken", redis.getRefreshToken());
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
+        // 2주 후 만료일 설정
+        cookie.setMaxAge(60 * 60 * 24 * 14); // 초 단위로 설정
         cookie.setPath("/");
         cookie.setAttribute("SameSite", "None"); //쿠키에 samesite 속성 추가
 
@@ -211,11 +219,72 @@ public class AuthServiceImpl implements AuthService{
         Long now = new Date().getTime();
         Long expiration = date.getTime() - now;
         String id = securityUtil.getCurrentMemberUsername();
+
         if (refreshRepository.findById(id).isPresent()) { //리프레시 토큰 삭제
             refreshRepository.deleteById(id);
         }
 
+        /* oauth2 access 토큰 삭제 */
+//        if (redisUtil.getValues("AT(oauth2):" + id) != null) {
+//            String socialAccessToken = (String) redisUtil.getValues("AT(oauth2):" + id);
+//            kakaoLogout(socialAccessToken);
+//            redisUtil.deleteValues("AT(oauth2):" + id);
+//        }
+        if (redisUtil.getValues("AT(oauth2):" + id) != null) {
+            String socialAccessToken = (String) redisUtil.getValues("AT(oauth2):" + id);
+            int underscoreIndex = id.indexOf("_");
+            if (underscoreIndex != -1) {
+                String socialType = id.substring(0, underscoreIndex);
+                if (socialType.equals("google")) {
+                    googleLogout(socialAccessToken);
+                } else if (socialType.equals("kakao")) {
+                    kakaoLogout(socialAccessToken);
+                }
+            }
+            redisUtil.deleteValues("AT(oauth2):" + id);
+        }
+
         redisUtil.setBlackList(token, "logout", Duration.ofMillis(expiration)); //accessToken 블랙리스트 생성
+
         return new UserDto.ResponseBasic(200, "로그아웃 되었습니다.");
+    }
+
+    public void kakaoLogout(String access_Token) {
+        String reqURL = "https://kapi.kakao.com/v1/user/logout";
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Bearer " + access_Token);
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("responseCode : " + responseCode);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String result = "";
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+            System.out.println(result);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void googleLogout(String accessToken) {
+        String tokenInfoUrl = "https://oauth2.googleapis.com/tokeninfo?access_token=" + accessToken;
+        try {
+            URL url = new URL(tokenInfoUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            int responseCode = conn.getResponseCode();
+            System.out.println("Google Logout Response Code: " + responseCode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

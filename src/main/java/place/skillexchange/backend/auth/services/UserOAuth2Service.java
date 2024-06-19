@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import place.skillexchange.backend.auth.dto.OAuth2CustomUser;
 import place.skillexchange.backend.auth.dto.OAuthAttributes;
+import place.skillexchange.backend.common.util.RedisUtil;
 import place.skillexchange.backend.user.repository.UserRepository;
 
 import java.util.Collections;
@@ -24,6 +25,8 @@ import java.util.Map;
 public class UserOAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
+    private final RedisUtil redisUtil;
+    private final long ACCESS_TOKEN_EXPIRATION = 3600 * 1000;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -31,9 +34,12 @@ public class UserOAuth2Service implements OAuth2UserService<OAuth2UserRequest, O
         OAuth2User oAuth2User = service.loadUser(userRequest);  // OAuth2 정보를 가져옵니다.
         log.error("OAuth2User attributes: {}", oAuth2User.getAttributes());
 
+        // 회원 탈퇴 토큰 추출
+        String oauth2AccessToken = userRequest.getAccessToken().getTokenValue();
+
         Map<String, Object> originAttributes = oAuth2User.getAttributes(); // OAuth2User의 attribute
 
-        // OAuth2 서비스 id (google, kakao, naver)
+        // OAuth2 서비스 id (google, kakao)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();    // 소셜 정보를 가져옵니다.
 
         // OAuthAttributes: OAuth2User의 attribute를 서비스 유형에 맞게 담아줄 클래스
@@ -41,7 +47,17 @@ public class UserOAuth2Service implements OAuth2UserService<OAuth2UserRequest, O
 
         if (!userRepository.findById(attributes.getEmail()).isPresent()) { //db에 해당 회원정보 없다면 저장
             userRepository.save(attributes.toEntity());
+
+            /*레디스 소셜 로그인 토큰 저장*/
+            redisUtil.setValuesWithTimeout("AT(oauth2):" + attributes.getEmail() , oauth2AccessToken, ACCESS_TOKEN_EXPIRATION);
         }
+
+        /* oauth2 토큰 중복 방지 */
+        if (redisUtil.getValues("AT(oauth2):" + attributes.getEmail()) != null) {
+            redisUtil.deleteValues("AT(oauth2):" + attributes.getEmail());
+        }
+        /* 레디스 토큰 정보 */
+        redisUtil.setValuesWithTimeout("AT(oauth2):" + attributes.getEmail() ,oauth2AccessToken, ACCESS_TOKEN_EXPIRATION);
 
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 

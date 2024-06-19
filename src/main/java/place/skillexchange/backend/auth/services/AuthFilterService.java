@@ -67,7 +67,7 @@ public class AuthFilterService extends OncePerRequestFilter {
 
 
         if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            String blackListValue = (String) redisUtil.getBlackList(jwt);
+            String blackListValue = (String) redisUtil.getValues(jwt);
             //accessToken이 블랙리스트에 등록되었는지 확인
             if (blackListValue != null && blackListValue.equals("logout")) {
                 // 블랙리스트에 등록된 토큰인 경우 예외 처리

@@ -92,8 +92,8 @@ public class JwtService {
                 .claim("authorities",populateAuthorities(userDetails.getAuthorities()))
                 //issuedAt(): 클라이언트에게 JWT 토큰이 발행시간 설정
                 .issuedAt(new Date())
-                //expiration(): 클라이언트에게 JWT 토큰이 만료시간 설정 (하루)
-                .expiration(new Date((new Date()).getTime() + /*1 * 60 * 1000*/ 24 * 60 * 60 * 1000))
+                //expiration(): 클라이언트에게 JWT 토큰이 만료시간 설정 (1시간)
+                .expiration(new Date((new Date()).getTime() + (60 * 60 * 1000)))
                 //signWith(): JWT 토큰 속 모든 요청에 디지털 서명을 하는 것, 여기서 위에서 설정한 비밀키를 대입
                 .signWith(getSignInKey()).compact();
     }
