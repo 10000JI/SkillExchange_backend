@@ -149,4 +149,12 @@ public class UserController {
     public UserDto.ResponseBasic logout(HttpServletRequest request) {
         return authService.logout(request);
     }
+
+    /**
+     * 회원탈퇴
+     */
+    @PostMapping("/withdraw")
+    public UserDto.ResponseBasic withdraw() {
+        return authService.withdraw();
+    }
 }

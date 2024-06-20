@@ -25,4 +25,6 @@ public interface AuthService {
                                                           HttpServletResponse response);
 
     public UserDto.ResponseBasic logout(HttpServletRequest request);
+
+    public UserDto.ResponseBasic withdraw();
 }

@@ -158,9 +158,9 @@ public class AuthFilterService extends OncePerRequestFilter {
         response.setHeader("Authorization", "Bearer " + jwt);
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String servletPath = request.getServletPath();
-        return servletPath.equals("/v1/user/withdraw");
-    }
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) {
+//        String servletPath = request.getServletPath();
+//        return servletPath.equals("/v1/user/withdraw");
+//    }
 }

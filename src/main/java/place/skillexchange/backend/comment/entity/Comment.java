@@ -64,4 +64,8 @@ public class Comment extends CreatedDateEntity {
     public void changeDeletedStatus(DeleteStatus deleteStatus) {
         this.isDeleted = deleteStatus;
     }
+
+    public void changeUserNull() {
+        this.writer = null;
+    }
 }

@@ -5,7 +5,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import place.skillexchange.backend.comment.entity.Comment;
+import place.skillexchange.backend.talent.entity.Talent;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, CustomCommentRepository {
@@ -29,4 +31,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, CustomC
     @Modifying
     @Query("DELETE FROM Comment c WHERE c.talent.id = :talentId")
     void deleteParentCommentsByTalentId(@Param("talentId") Long talentId);
+
+    @Query("SELECT c FROM Comment c LEFT JOIN FETCH c.writer w WHERE w.id = :userId")
+    List<Comment> findByWriterId(String userId);
 }

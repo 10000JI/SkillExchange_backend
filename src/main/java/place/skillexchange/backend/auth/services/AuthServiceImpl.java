@@ -17,9 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import place.skillexchange.backend.comment.entity.Comment;
+import place.skillexchange.backend.comment.repository.CommentRepository;
 import place.skillexchange.backend.common.util.RedisUtil;
 import place.skillexchange.backend.common.util.SecurityUtil;
 import place.skillexchange.backend.exception.user.UserIdLoginException;
+import place.skillexchange.backend.talent.entity.Talent;
+import place.skillexchange.backend.talent.repository.TalentRepository;
 import place.skillexchange.backend.user.dto.UserDto;
 import place.skillexchange.backend.user.entity.Refresh;
 import place.skillexchange.backend.user.entity.User;
@@ -51,6 +55,8 @@ public class AuthServiceImpl implements AuthService{
     private final RefreshRepository refreshRepository;
     private final SecurityUtil securityUtil;
     private final RedisUtil redisUtil;
+    private final TalentRepository talentRepository;
+    private final CommentRepository commentRepository;
 
     /* 회원가입 ~ 로그인 까지 (JWT 생성) */
 
@@ -220,16 +226,12 @@ public class AuthServiceImpl implements AuthService{
         Long expiration = date.getTime() - now;
         String id = securityUtil.getCurrentMemberUsername();
 
-        if (refreshRepository.findById(id).isPresent()) { //리프레시 토큰 삭제
+        // 리프레시 토큰 삭제
+        if (refreshRepository.findById(id).isPresent()) {
             refreshRepository.deleteById(id);
         }
 
         /* oauth2 access 토큰 삭제 */
-//        if (redisUtil.getValues("AT(oauth2):" + id) != null) {
-//            String socialAccessToken = (String) redisUtil.getValues("AT(oauth2):" + id);
-//            kakaoLogout(socialAccessToken);
-//            redisUtil.deleteValues("AT(oauth2):" + id);
-//        }
         if (redisUtil.getValues("AT(oauth2):" + id) != null) {
             String socialAccessToken = (String) redisUtil.getValues("AT(oauth2):" + id);
             int underscoreIndex = id.indexOf("_");
@@ -247,6 +249,30 @@ public class AuthServiceImpl implements AuthService{
         redisUtil.setBlackList(token, "logout", Duration.ofMillis(expiration)); //accessToken 블랙리스트 생성
 
         return new UserDto.ResponseBasic(200, "로그아웃 되었습니다.");
+    }
+
+    @Override
+    public UserDto.ResponseBasic withdraw() {
+        String id = SecurityUtil.getCurrentMemberUsername();
+        if (refreshRepository.findById(id).isPresent()) { //리프레시 토큰 삭제
+            refreshRepository.deleteById(id);
+        }
+        List<Talent> talents = talentRepository.findByWriterId(id);
+        if (!talents.isEmpty()) {
+            for (Talent talent : talents) {
+                talent.changeUserNull();
+            }
+        }
+        List<Comment> comments = commentRepository.findByWriterId(id);
+        if (!comments.isEmpty()) {
+            for (Comment comment : comments) {
+                comment.changeUserNull();
+            }
+        }
+
+        userRepository.deleteById(id);
+
+        return new UserDto.ResponseBasic(200, "회원 탈퇴가 정상적으로 처리되었습니다.");
     }
 
     public void kakaoLogout(String access_Token) {

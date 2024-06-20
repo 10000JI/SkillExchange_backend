@@ -125,5 +125,9 @@ public class Talent extends BaseEntity {
     public void updateHit() {
         hit++;
     }
+
+    public void changeUserNull() {
+        this.writer = null;
+    }
 }
 

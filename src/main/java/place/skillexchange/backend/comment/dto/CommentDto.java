@@ -41,9 +41,10 @@ public class CommentDto {
         //아니라면(N이라면) new ViewResponse(comment.getId(), comment.getContent(), comment.getWriter().getId())
         public static CommentViewResponse entityToDto(Comment comment) {
             String imgUrl = comment.getWriter() != null && comment.getWriter().getFile() != null ? comment.getWriter().getFile().getFileUrl() : null;
+            String writer = comment.getWriter() == null ? null : comment.getWriter().getId();
             return comment.getIsDeleted() == DeleteStatus.Y ?
                     new CommentViewResponse(comment.getId(), "삭제된 댓글입니다.", null, imgUrl, comment.getRegDate()) :
-                    new CommentViewResponse(comment.getId(), comment.getContent(), comment.getWriter().getId(), imgUrl, comment.getRegDate());
+                    new CommentViewResponse(comment.getId(), comment.getContent(), writer, imgUrl, comment.getRegDate());
         }
     }
 

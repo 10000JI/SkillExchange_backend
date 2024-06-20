@@ -283,7 +283,11 @@ public class UserDto {
 
         /* Entity -> Dto */
         public MyScrapResponse(Talent talent) {
-            this.writer = talent.getWriter().getId();
+            if (talent.getWriter() == null) {
+                this.writer = "(알 수 없음)";
+            } else {
+                this.writer = talent.getWriter().getId();
+            }
             this.id = talent.getId();
             this.content = talent.getContent();
             this.title = talent.getTitle();

@@ -37,4 +37,7 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
     //관련 게시물 5개 뽑아내기
     @Query("SELECT t FROM Talent t LEFT JOIN FETCH t.teachedSubject sc WHERE sc.subjectName = :subjectName ORDER BY t.id DESC")
     List<Talent> findRelatedPostsById(Pageable pageable, String subjectName);
+
+    @Query("SELECT t FROM Talent t LEFT JOIN FETCH t.writer w WHERE w.id = :userId")
+    List<Talent> findByWriterId(String userId);
 }
