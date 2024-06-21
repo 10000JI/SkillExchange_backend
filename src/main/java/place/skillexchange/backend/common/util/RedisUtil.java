@@ -25,13 +25,13 @@ public class RedisUtil {
     }
 
     // 소셜 로그인 탈퇴를 위해 저장, 만료일, 삭제 등
-    /**
-     * 만료 시간 없는 키 값 지정
-     */
-    @Transactional
-    public void setValues(String key, String value){
-        redisTemplate.opsForValue().set(key, value);
-    }
+//    /**
+//     * 만료 시간 없는 키 값 지정
+//     */
+//    @Transactional
+//    public void setValues(String key, String value){
+//        redisTemplate.opsForValue().set(key, value);
+//    }
 
     /**
      * 만료시간 설정 -> 자동삭제

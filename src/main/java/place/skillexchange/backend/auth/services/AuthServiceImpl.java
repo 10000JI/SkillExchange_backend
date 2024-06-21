@@ -223,18 +223,10 @@ public class AuthServiceImpl implements AuthService{
         return new UserDto.SignUpInResponse(user, 200, "로그인 성공!");
     }
 
+    //로그아웃
     @Override
     public UserDto.ResponseBasic logout(HttpServletRequest request) {
-        String token = request.getHeader("Authorization").substring(7);
-        Date date = jwtService.extractExpiration(token);
-        Long now = new Date().getTime();
-        Long expiration = date.getTime() - now;
-        String id = securityUtil.getCurrentMemberUsername();
-
-        // 리프레시 토큰 삭제
-        if (refreshRepository.findById(id).isPresent()) {
-            refreshRepository.deleteById(id);
-        }
+        String id = invalidateToken(request);
 
         /* oauth2 access 토큰 삭제 */
         if (redisUtil.getValues("AT(oauth2):" + id) != null) {
@@ -251,9 +243,26 @@ public class AuthServiceImpl implements AuthService{
             redisUtil.deleteValues("AT(oauth2):" + id);
         }
 
-        redisUtil.setBlackList(token, "logout", Duration.ofMillis(expiration)); //accessToken 블랙리스트 생성
 
         return new UserDto.ResponseBasic(200, "로그아웃 되었습니다.");
+    }
+
+    // 액세스/리프레시 토큰 무효화
+    private String invalidateToken(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        Date date = jwtService.extractExpiration(token);
+        Long now = new Date().getTime();
+        Long expiration = date.getTime() - now;
+        String id = securityUtil.getCurrentMemberUsername();
+
+        // 엑세스 토큰 블랙리스트 관리
+        redisUtil.setBlackList(token, "logout", Duration.ofMillis(expiration));
+
+        // 리프레시 토큰 삭제
+        if (refreshRepository.findById(id).isPresent()) {
+            refreshRepository.deleteById(id);
+        }
+        return id;
     }
 
     @Override
@@ -335,7 +344,7 @@ public class AuthServiceImpl implements AuthService{
         String accessToken = (String) redisUtil.getValues("AT(oauth2):" + id);
         // oauth2 토큰이 만료 시 재 로그인
         if (accessToken == null) {
-            logout(request);
+            invalidateToken(request);
             throw SocialLoginRequriedException.EXCEPTION;
         } else {
             redisUtil.deleteValues("AT(oauth2):" + id);
@@ -369,7 +378,7 @@ public class AuthServiceImpl implements AuthService{
         String accessToken = (String) redisUtil.getValues("AT(oauth2):" + id);
         // oauth2 토큰이 만료 시 재 로그인
         if (accessToken == null) {
-            logout(request);
+            invalidateToken(request);
             throw SocialLoginRequriedException.EXCEPTION;
         } else {
             redisUtil.deleteValues("AT(oauth2):" + id);
