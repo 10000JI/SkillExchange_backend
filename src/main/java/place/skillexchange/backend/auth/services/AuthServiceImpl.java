@@ -402,7 +402,6 @@ public class AuthServiceImpl implements AuthService{
             }
             in.close();
 
-            System.out.println("Google Unlink Response: " + response.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
