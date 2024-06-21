@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -17,10 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.client.RestTemplate;
 import place.skillexchange.backend.comment.entity.Comment;
 import place.skillexchange.backend.comment.repository.CommentRepository;
 import place.skillexchange.backend.common.util.RedisUtil;
 import place.skillexchange.backend.common.util.SecurityUtil;
+import place.skillexchange.backend.exception.user.SocialLoginRequriedException;
 import place.skillexchange.backend.exception.user.UserIdLoginException;
 import place.skillexchange.backend.talent.entity.Talent;
 import place.skillexchange.backend.talent.repository.TalentRepository;
@@ -252,8 +256,20 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public UserDto.ResponseBasic withdraw() {
+    public UserDto.ResponseBasic withdraw(HttpServletRequest request) {
         String id = SecurityUtil.getCurrentMemberUsername();
+
+        /* 카카오 및 구글 연결 해제 */
+        int underscoreIndex = id.indexOf("_");
+        if (underscoreIndex != -1) {
+            String socialType = id.substring(0, underscoreIndex);
+            if (socialType.equals("google")) {
+                //googleUnlink(id);
+            } else if (socialType.equals("kakao")) {
+                kakaoUnlink(id, request);
+            }
+        }
+
         if (refreshRepository.findById(id).isPresent()) { //리프레시 토큰 삭제
             refreshRepository.deleteById(id);
         }
@@ -309,6 +325,40 @@ public class AuthServiceImpl implements AuthService{
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             System.out.println("Google Logout Response Code: " + responseCode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void kakaoUnlink(String id, HttpServletRequest request) {
+        String accessToken = (String) redisUtil.getValues("AT(oauth2):" + id);
+        // oauth2 토큰이 만료 시 재 로그인
+        if (accessToken == null) {
+            logout(request);
+            throw SocialLoginRequriedException.EXCEPTION;
+        } else {
+            redisUtil.deleteValues("AT(oauth2):" + id);
+        }
+
+        String reqURL = "https://kapi.kakao.com/v1/user/unlink";
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("responseCode : " + responseCode);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String result = "";
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+            System.out.println(result);
         } catch (IOException e) {
             e.printStackTrace();
         }
