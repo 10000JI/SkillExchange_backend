@@ -27,7 +27,7 @@ public enum UserErrorCode implements BaseErrorCode {
     SCRAP_NOT_FOUND(BAD_REQUEST,"USER_400_4","스크랩한 게시물이 없습니다."),
     WRITER_LOGGEDINUSER_INVALID(INTERNAL_SERVER, "USER_500_1", "로그인한 회원 정보와 글쓴이가 다릅니다."),
     ACCOUNT_LOGIN_REQUIRED(NOT_FOUND,"USER_404_1", "계정에 다시 로그인 해야 합니다."),
-    SOCIAL_LOGIN_REQUIRED(NOT_FOUND,"USER_404_2", "해당 소셜 로그인(카카오 혹은 구글) 계정으로 다시 로그인 해주세요."),
+    SOCIAL_LOGIN_REQUIRED(NOT_FOUND,"USER_404_2", "해당 소셜 로그인(카카오 혹은 구글) 계정으로 다시 로그인한 후 회원 탈퇴를 진행해주세요"),
     USER_EMAIL_NOT_FOUND(NOT_FOUND, "USER_404_2", "등록된 계정 중 없는 이메일 주소 입니다.");
     
 

@@ -38,6 +38,7 @@ import place.skillexchange.backend.user.repository.UserRepository;
 import place.skillexchange.backend.common.service.MailService;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -264,7 +265,7 @@ public class AuthServiceImpl implements AuthService{
         if (underscoreIndex != -1) {
             String socialType = id.substring(0, underscoreIndex);
             if (socialType.equals("google")) {
-                //googleUnlink(id);
+                googleUnlink(id, request);
             } else if (socialType.equals("kakao")) {
                 kakaoUnlink(id, request);
             }
@@ -359,6 +360,49 @@ public class AuthServiceImpl implements AuthService{
                 result += line;
             }
             System.out.println(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void googleUnlink(String id, HttpServletRequest request) {
+        String accessToken = (String) redisUtil.getValues("AT(oauth2):" + id);
+        // oauth2 토큰이 만료 시 재 로그인
+        if (accessToken == null) {
+            logout(request);
+            throw SocialLoginRequriedException.EXCEPTION;
+        } else {
+            redisUtil.deleteValues("AT(oauth2):" + id);
+        }
+        String tokenInfoUrl = "https://oauth2.googleapis.com/revoke";
+        try {
+            URL url = new URL(tokenInfoUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
+
+            String postData = "token=" + accessToken;
+            byte[] postDataBytes = postData.getBytes("UTF-8");
+
+            conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+
+            try (DataOutputStream wr = new DataOutputStream(conn.getOutputStream())) {
+                wr.write(postDataBytes);
+            }
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("Google Unlink Response Code: " + responseCode);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            System.out.println("Google Unlink Response: " + response.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
