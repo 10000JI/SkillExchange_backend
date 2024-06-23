@@ -19,7 +19,6 @@ public class CommentDto {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Schema(description = "공지사항 게시물 번호의 댓글 조회를 위한 도메인 객체")
     public static class CommentViewResponse {
         private Long id;
         private String content;

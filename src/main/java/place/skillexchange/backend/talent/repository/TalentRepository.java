@@ -3,6 +3,7 @@ package place.skillexchange.backend.talent.repository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import place.skillexchange.backend.talent.entity.Talent;
@@ -38,6 +39,10 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
     @Query("SELECT t FROM Talent t LEFT JOIN FETCH t.teachedSubject sc WHERE sc.subjectName = :subjectName ORDER BY t.id DESC")
     List<Talent> findRelatedPostsById(Pageable pageable, String subjectName);
 
-    @Query("SELECT t FROM Talent t LEFT JOIN FETCH t.writer w WHERE w.id = :userId")
+    @Query("SELECT t FROM Talent t LEFT JOIN FETCH t.writer w LEFT JOIN FETCH w.file f WHERE w.id = :userId")
     List<Talent> findByWriterId(String userId);
+
+    @Modifying
+    @Query("DELETE FROM Talent t WHERE t.writer.id = :userId")
+    void deleteByWriterId(@Param("userId") String userId);
 }

@@ -26,6 +26,7 @@ import place.skillexchange.backend.common.util.RedisUtil;
 import place.skillexchange.backend.common.util.SecurityUtil;
 import place.skillexchange.backend.exception.user.SocialLoginRequriedException;
 import place.skillexchange.backend.exception.user.UserIdLoginException;
+import place.skillexchange.backend.file.repository.FileRepository;
 import place.skillexchange.backend.talent.entity.Talent;
 import place.skillexchange.backend.talent.repository.TalentRepository;
 import place.skillexchange.backend.user.dto.UserDto;
@@ -62,6 +63,7 @@ public class AuthServiceImpl implements AuthService{
     private final RedisUtil redisUtil;
     private final TalentRepository talentRepository;
     private final CommentRepository commentRepository;
+    private final FileRepository fileRepository;
 
     /* 회원가입 ~ 로그인 까지 (JWT 생성) */
 
@@ -266,6 +268,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
+    @Transactional
     public UserDto.ResponseBasic withdraw(HttpServletRequest request) {
         String id = SecurityUtil.getCurrentMemberUsername();
 
@@ -283,18 +286,24 @@ public class AuthServiceImpl implements AuthService{
         if (refreshRepository.findById(id).isPresent()) { //리프레시 토큰 삭제
             refreshRepository.deleteById(id);
         }
-        List<Talent> talents = talentRepository.findByWriterId(id);
-        if (!talents.isEmpty()) {
-            for (Talent talent : talents) {
-                talent.changeUserNull();
-            }
+
+        // 사용자의 모든 게시물(Talent)에 대한 댓글 관계 제거 및 삭제
+        List<Talent> userTalents = talentRepository.findByWriterId(id);
+        for (Talent talent : userTalents) {
+            commentRepository.removeParentRelationForChildCommentsByTalentId(talent.getId());
+            commentRepository.deleteParentCommentsByTalentId(talent.getId());
         }
-        List<Comment> comments = commentRepository.findByWriterId(id);
-        if (!comments.isEmpty()) {
-            for (Comment comment : comments) {
-                comment.changeUserNull();
-            }
+
+        // 사용자가 올린 게시물 이미지 삭제
+        for (Talent talent : userTalents) {
+            fileRepository.deleteByTalentId(talent.getId());
         }
+
+        // 사용자의 게시물 삭제
+        talentRepository.deleteByWriterId(id);
+
+        // 사용자가 작성한 댓글은 null로 변경 (재능교환 게시물은 삭제하나 댓글은 삭제하지 않음)
+        commentRepository.nullifyWriterByUserId(id);
 
         userRepository.deleteById(id);
 

@@ -24,6 +24,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, CustomC
     @Query("DELETE FROM Comment c WHERE c.notice.id = :noticeId")
     void deleteParentCommentsByNoticeId(@Param("noticeId") Long noticeId);
 
+    // 게시물과 댓글 연관관계 제거
     @Modifying
     @Query("UPDATE Comment c SET c.parent = NULL WHERE c.parent.id IN (SELECT c2.id FROM Comment c2 WHERE c2.talent.id = :talentId)")
     void removeParentRelationForChildCommentsByTalentId(@Param("talentId") Long talentId);
@@ -32,6 +33,20 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, CustomC
     @Query("DELETE FROM Comment c WHERE c.talent.id = :talentId")
     void deleteParentCommentsByTalentId(@Param("talentId") Long talentId);
 
+    // 사용자가 작성한 댓글의 관계 제거 및 삭제
+    @Modifying
+    @Query("UPDATE Comment c SET c.parent = NULL WHERE c.parent.writer.id = :userId")
+    void removeParentRelationForChildCommentsByUserId(@Param("userId") String userId);
+
+    @Modifying
+    @Query("DELETE FROM Comment c WHERE c.writer.id = :userId")
+    void deleteCommentsByUserId(@Param("userId") String userId);
+
     @Query("SELECT c FROM Comment c LEFT JOIN FETCH c.writer w WHERE w.id = :userId")
     List<Comment> findByWriterId(String userId);
+
+    @Modifying
+    @Query("UPDATE Comment c SET c.writer = NULL WHERE c.writer.id = :userId")
+    void nullifyWriterByUserId(@Param("userId") String userId);
+
 }

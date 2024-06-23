@@ -18,7 +18,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import place.skillexchange.backend.common.service.MailService;
 import place.skillexchange.backend.user.dto.UserDto;
-import place.skillexchange.backend.user.entity.RefreshToken;
 import place.skillexchange.backend.user.entity.User;
 import place.skillexchange.backend.user.repository.UserRepository;
 

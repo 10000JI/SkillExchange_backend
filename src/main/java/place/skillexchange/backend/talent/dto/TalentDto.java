@@ -181,11 +181,12 @@ public class TalentDto {
 
         /* Entity -> Dto */
         public TalentReadResponse(Talent talent) {
-            if (talent.getWriter() == null) {
-                this.writer = "(알 수 없음)";
-            } else {
-                this.writer = talent.getWriter().getId();
-            }
+//            if (talent.getWriter() == null) {
+//                this.writer = "(알 수 없음)";
+//            } else {
+//                this.writer = talent.getWriter().getId();
+//            }
+            this.writer = talent.getWriter().getId();
             if (talent.getWriter() != null && talent.getWriter().getFile() != null) {
                 this.avatar = talent.getWriter().getFile().getFileUrl();
             } else {

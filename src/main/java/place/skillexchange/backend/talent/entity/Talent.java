@@ -129,5 +129,9 @@ public class Talent extends BaseEntity {
     public void changeUserNull() {
         this.writer = null;
     }
+
+    public User getWriter() {
+        return writer != null ? writer : new User(); // 또는 적절한 기본값
+    }
 }
 
