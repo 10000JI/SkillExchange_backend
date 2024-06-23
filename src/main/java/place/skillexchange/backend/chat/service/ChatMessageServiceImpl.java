@@ -16,8 +16,8 @@ public class ChatMessageServiceImpl implements ChatMessageService{
     private final ChatRoomRepository chatRoomRepository;
 
     @Override
-    public ChatMessage createChatMessage(ChatDto.ChatMessageDto chatMessageDto) {
-        ChatMessage chatMessage = chatMessageDto.toEntity();
+    public ChatMessage createChatMessage(ChatDto.ChatMessageDto chatMessageDto, String userId) {
+        ChatMessage chatMessage = chatMessageDto.toEntity(userId);
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessage.getRoomId()).orElseThrow();
         chatRoom.setLastChatMesg(chatMessage);
         chatRoomRepository.save(chatRoom);

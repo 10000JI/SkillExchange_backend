@@ -10,10 +10,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    //private final StompHandler stompHandler;
+    private final StompHandler stompHandler;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -21,11 +21,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // socketJs 클라이언트가 WebSocket 핸드셰이크를 하기 위해 연결할 endpoint를 지정할 수 있다.
         registry.addEndpoint("/chat/inbox")
                 .setAllowedOriginPatterns("*"); // cors 허용을 위해 꼭 설정해주어야 함. setCredential() 설정시에 AllowedOrigin 과 같이 사용될 경우 오류가 날 수 있으므로 OriginPatterns 설정으로 사용하였음
-                //.withSockJS();
-        //.addInterceptors(new StompHandshakeInterceptor()); // 핸드쉐이크시 인터셉터를 넣을 수 있음
-//                .withSockJS()
-//                .setDisconnectDelay(30 * 1000)
-//                .setClientLibraryUrl("https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"); // 프론트에서 사용하는 sockjs 라이브러리와 동일하게 사용하였음
     }
 
     @Override
@@ -41,9 +36,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     }
 
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        registration.interceptors(stompHandler);
-//    }
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(stompHandler);
+    }
 
 }

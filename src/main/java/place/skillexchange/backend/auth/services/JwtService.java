@@ -52,14 +52,14 @@ public class JwtService {
     /**
      * activeToken에서 모든 클레임을 추출하는 작업
      */
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
                 //verifyWith(): key 같은 값을 보냄
                 .verifyWith(getSignInKey())
                 .build()
                 //parseSignedClaims(): 받은 JWT 토큰 보냄
-                .parseSignedClaims(token)
+                .parseSignedClaims(token.trim())
                 //JWT 바디 값을 읽어보자, 특정 값을 나타내는 토큰 값이라면 헤더에서 서명 부분을 읽고 싶지 않은 것이다
                 //getPayload() 메소드에서 claims를 가져옴
                 .getPayload();

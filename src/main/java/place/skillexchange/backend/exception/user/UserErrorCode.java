@@ -16,7 +16,8 @@ import static place.skillexchange.backend.common.consts.ConstFields.*;
 public enum UserErrorCode implements BaseErrorCode {
 
     @ExplainError("인증 및 권한이 없는 경우")
-    USER_TOKEN_EXPIRED(UNAUTHORIZED, "USER_401_1", "토큰이 만료 되었습니다."),
+    USER_TOKEN_EXPIRED(UNAUTHORIZED, "USER_401_1", "해당 토큰이 만료되었거나 올바른 형태가 아닙니다."),
+    ACCESSTOKEN_REQUIRED(UNAUTHORIZED, "USER_401_2", "액세스 토큰이 필요합니다"),
     REFRESHTOKEN_NOT_FOUND(UNAUTHORIZED, "USER_401_2", "Refresh Token을 찾을 수 없습니다."),
     REFRESHTOKEN_EXPIRED(UNAUTHORIZED, "USER_401_3", "Refresh Token이 만료되었습니다."),
     USER_ACCESS_DENIED(FORBIDDEN, "USER_403_1", "접근이 거부되었습니다."),
