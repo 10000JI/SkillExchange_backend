@@ -110,14 +110,14 @@ public class ChatDto {
     @AllArgsConstructor
     public static class ChatMessageDto {
         private String roomId;
-        //private String authorId;
+        private String authorId;
         private String message;
 
         /* Dto -> Entity */
-        public ChatMessage toEntity(String userId) {
+        public ChatMessage toEntity() {
             ChatMessage chatMessage = ChatMessage.builder()
                     .roomId(roomId)
-                    .authorId(userId)
+                    .authorId(authorId)
                     .message(message)
                     .createdAt(LocalDateTime.now())
                     .build();

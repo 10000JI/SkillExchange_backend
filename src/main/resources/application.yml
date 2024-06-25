@@ -37,6 +37,9 @@ logging:
       SQL: debug
       type: trace
     org.apache.coyote.http11: debug
+    place.skillexchange.backend: debug  # 이 줄을 추가
+    org.springframework.web.socket: debug  # WebSocket 관련 로그를 위해 추가
+    org.springframework.messaging: debug  # STOMP 메시징 관련 로그를 위해 추가
 
 
 server:

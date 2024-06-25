@@ -54,4 +54,5 @@ public class ChatRoom {
         this.chatRoomMembers.add(roomMaker);
         this.chatRoomMembers.add(guest);
     }
+
 }
