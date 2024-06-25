@@ -35,6 +35,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         if (!id.equals(chatRoomRequest.getRoomMakerId())) {
             throw UserNotFoundException.EXCEPTION;
         }
+        String sharedChatRoomId = chatRoomRepository.findSharedChatRoom(chatRoomRequest.getGuestId(), chatRoomRequest.getRoomMakerId());
+        if (sharedChatRoomId != null && !sharedChatRoomId.isEmpty()) {
+            return new ChatDto.CreateChatRoomResponse(chatRoomRequest.getRoomMakerId(), chatRoomRequest.getGuestId(), sharedChatRoomId);
+        }
         User roomMaker = userRepository.findById(id).orElseThrow(() -> UserNotFoundException.EXCEPTION);
         User guest = userRepository.findById(chatRoomRequest.getGuestId()).orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
