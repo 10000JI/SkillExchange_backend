@@ -32,7 +32,7 @@ public class UserOAuth2Service implements OAuth2UserService<OAuth2UserRequest, O
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2UserService<OAuth2UserRequest, OAuth2User> service = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = service.loadUser(userRequest);  // OAuth2 정보를 가져옵니다.
-        log.error("OAuth2User attributes: {}", oAuth2User.getAttributes());
+        //log.error("OAuth2User attributes: {}", oAuth2User.getAttributes());
 
         // 카카오(혹은 구글) 서버에서 발급해주는 AccessToken 추출
         String oauth2AccessToken = userRequest.getAccessToken().getTokenValue();

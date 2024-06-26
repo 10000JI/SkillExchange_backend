@@ -14,11 +14,9 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.messaging.Message;
 
 @Configuration
 @EnableRabbit
@@ -28,27 +26,6 @@ public class RabbitConfig {
     private static final String CHAT_QUEUE_NAME = "chat.queue";
     private static final String CHAT_EXCHANGE_NAME = "chat.exchange";
     private static final String ROUTING_KEY = "*.room.*";
-
-//    private final RabbitMQMessageInterceptor rabbitMQMessageInterceptor;
-//
-//    @Bean
-//    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-//            ConnectionFactory connectionFactory,
-//            SimpleRabbitListenerContainerFactoryConfigurer configurer) {
-//
-//        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-//        configurer.configure(factory, connectionFactory);
-//
-//        factory.setAdviceChain(new MethodInterceptor() {
-//            @Override
-//            public Object invoke(MethodInvocation invocation) throws Throwable {
-//                Message message = (Message) invocation.getArguments()[1];
-//                return rabbitMQMessageInterceptor.preSend(message, null);
-//            }
-//        });
-//
-//        return factory;
-//    }
 
     //Queue 등록
     @Bean
