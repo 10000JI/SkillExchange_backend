@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import place.skillexchange.backend.talent.dto.RequestSkillInfo;
 import place.skillexchange.backend.talent.dto.TalentDto;
 import place.skillexchange.backend.talent.service.TalentService;
 
@@ -92,4 +93,29 @@ public class TalentController {
     public List<TalentDto.RelatedPostsResponse> getRelatedPosts(@RequestBody TalentDto.RelatedPostsRequest dto) {
         return talentService.getRelatedPosts(dto.getSubjectName());
     }
+
+    /**
+     * 재능교환 요청
+     */
+    @PostMapping("/talentExchange/{talentId}")
+    public TalentDto.ResponseBasic talentExchange(@PathVariable Long talentId) {
+        return talentService.talentExchange(talentId);
+    }
+
+    /**
+     * 재능교환 요청 목록 (게시글 올린 작성자에게 보여지는)
+     */
+    @GetMapping("/talentExchange/info")
+    public List<RequestSkillInfo> talentExchangeInfo() {
+        return talentService.talentExchangeInfo();
+    }
+
+    /**
+     * 재능교환 요청 수락
+     */
+    @PostMapping("/talentExchange/{talentId}/approve")
+    public TalentDto.ResponseBasic talentExchangeApprove(@PathVariable Long talentId) {
+        return talentService.talentExchangeApprove(talentId);
+    }
 }
+

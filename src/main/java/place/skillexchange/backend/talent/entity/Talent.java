@@ -98,12 +98,25 @@ public class Talent extends BaseEntity {
     @OneToMany(mappedBy = "talent", cascade = CascadeType.PERSIST)
     private List<Comment> comments = new ArrayList<>();
 
+    // 재능교환 요청 필드
+    @Enumerated(EnumType.STRING)
+    @Column(name = "exchange_status")
+    private ExchangeStatus exchangeStatus = ExchangeStatus.PENDING;
+
+    // 재능교환 요청은 다수가 될 수 있음
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "talent_exchange_requests",
+            joinColumns = @JoinColumn(name = "talent_id"),
+            inverseJoinColumns = @JoinColumn(name = "requester_id")
+    )
+    private Set<User> exchangeRequesters = new HashSet<>();
 
     /**
      * 게시물 내용, 장소, 가르쳐줄 분야, 가르침 받을 분야, 요일, 연령대 수정
      * : null 이 아니라면 변경내용이 존재하는 것, null이라면 변경내용이 존재하지 않으므로 그대로 유지
      */
-    public void changeNotice(TalentDto.TalentUpdateRequest dto, Place place, SubjectCategory teachedSubject, SubjectCategory teachingSubject) {
+    public void changeTalent(TalentDto.TalentUpdateRequest dto, Place place, SubjectCategory teachedSubject, SubjectCategory teachingSubject) {
         this.content = dto.getContent();
         this.title = dto.getTitle();
         if (place != null) {
@@ -125,13 +138,18 @@ public class Talent extends BaseEntity {
     public void updateHit() {
         hit++;
     }
-
-    public void changeUserNull() {
-        this.writer = null;
-    }
-
     public User getWriter() {
         return writer != null ? writer : new User(); // 또는 적절한 기본값
+    }
+
+    public void addExchangeRequester(User requester) {
+        this.exchangeRequesters.add(requester);
+        if (this.exchangeStatus == ExchangeStatus.PENDING) {
+            this.exchangeStatus = ExchangeStatus.REQUESTED;
+        }
+    }
+    public void completeExchange() {
+        this.exchangeStatus = ExchangeStatus.COMPLETED;
     }
 }
 

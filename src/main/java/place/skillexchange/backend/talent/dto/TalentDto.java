@@ -70,6 +70,7 @@ public class TalentDto {
                     .minAge(minAge)
                     .maxAge(maxAge)
                     .gender(GenderForTalent.valueOf(gender)) // 문자열로 받은 gender 값을 GenderForTalent 열거형(enum)으로 변환하여 빌더 패턴에 설정
+                    .exchangeStatus(ExchangeStatus.PENDING)
                     .build();
             return talent;
         }

@@ -16,6 +16,7 @@ import place.skillexchange.backend.common.service.RedisService;
 import place.skillexchange.backend.common.util.CookieUtil;
 import place.skillexchange.backend.exception.board.*;
 import place.skillexchange.backend.file.repository.FileRepository;
+import place.skillexchange.backend.talent.dto.RequestSkillInfo;
 import place.skillexchange.backend.talent.dto.TalentDto;
 import place.skillexchange.backend.exception.user.WriterAndLoggedInUserMismatchExceptionAll;
 import place.skillexchange.backend.exception.user.UserNotFoundException;
@@ -34,8 +35,6 @@ import place.skillexchange.backend.user.repository.UserRepository;
 import place.skillexchange.backend.common.util.SecurityUtil;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -161,7 +160,7 @@ public class TalentServiceImpl implements TalentService {
         if(!talent.getTeachingSubject().getSubjectName().equals(dto.getTeachingSubject())) {
             teachingSubject = categoryRepository.findBySubjectName(dto.getTeachingSubject()).orElseThrow(() -> SubjectCategoryNotFoundException.EXCEPTION);
         }
-        talent.changeNotice(dto, place, teachedSubject, teachingSubject);
+        talent.changeTalent(dto, place, teachedSubject, teachingSubject);
 
         List<File> files = fileService.updateTalentImg(dto.getImgUrl(), multipartFiles, talent);
 
@@ -221,6 +220,7 @@ public class TalentServiceImpl implements TalentService {
         return new TalentDto.ResponseBasic(201,"스크랩이 완료되었습니다.");
     }
 
+    //관련 게시물
     @Override
     public List<TalentDto.RelatedPostsResponse> getRelatedPosts(String subjectName) {
         List<TalentDto.RelatedPostsResponse> result = new ArrayList<>();
@@ -235,4 +235,39 @@ public class TalentServiceImpl implements TalentService {
         }
         return result;
     }
+
+    // 재능교환 요청
+    @Override
+    @Transactional
+    public TalentDto.ResponseBasic talentExchange(Long talentId) {
+        String userId = securityUtil.getCurrentMemberUsername();
+        if (talentRepository.findRequestSkill(talentId, userId).isPresent()) {
+            throw BoardAleadyRequestSkillException.EXCEPTION;
+        }
+        Talent talent = talentRepository.findById(talentId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
+        talent.addExchangeRequester(userRepository.findById(userId).orElseThrow(() -> UserNotFoundException.EXCEPTION));
+        return new TalentDto.ResponseBasic(201,"재능교환 요청이 완료되었습니다");
+    }
+
+    //재능교환 요청 목록
+    @Override
+    public List<RequestSkillInfo> talentExchangeInfo() {
+        String userId = securityUtil.getCurrentMemberUsername();
+        User user = userRepository.findById(userId).orElseThrow(() -> UserNotFoundException.EXCEPTION);
+        List<RequestSkillInfo> exchangeRequestInfoByWriter = talentRepository.findExchangeRequestInfoByWriter(user);
+        return exchangeRequestInfoByWriter;
+    }
+
+    //재능교환 요청 수락
+    @Override
+    @Transactional
+    public TalentDto.ResponseBasic talentExchangeApprove(Long talentId) {
+        String userId = securityUtil.getCurrentMemberUsername();
+        Talent talent = talentRepository.findRequestSkill(talentId, userId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
+        talent.completeExchange();
+        talentRepository.deleteExchangeRequester(talentId);
+        return new TalentDto.ResponseBasic(201,"재능교환 서비스가 매칭되었습니다.");
+    }
+
+
 }

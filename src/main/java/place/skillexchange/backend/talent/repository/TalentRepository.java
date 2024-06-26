@@ -6,7 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import place.skillexchange.backend.talent.dto.RequestSkillInfo;
+import place.skillexchange.backend.talent.dto.TalentDto;
 import place.skillexchange.backend.talent.entity.Talent;
+import place.skillexchange.backend.user.entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,4 +48,20 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
     @Modifying
     @Query("DELETE FROM Talent t WHERE t.writer.id = :userId")
     void deleteByWriterId(@Param("userId") String userId);
+
+    @Query("SELECT t FROM Talent t " +
+            "JOIN t.exchangeRequesters ex " +
+            "WHERE t.id = :talentId AND ex.id = :userId")
+    Optional<Talent> findRequestSkill(@Param("talentId") Long talentId, @Param("userId") String userId);
+
+    @Query("SELECT new place.skillexchange.backend.talent.dto.RequestSkillInfo(t.id, er.id) " +
+            "FROM Talent t JOIN t.exchangeRequesters er " +
+            "WHERE t.writer = :user")
+    List<RequestSkillInfo> findExchangeRequestInfoByWriter(@Param("user") User user);
+
+
+    @Modifying //네이티브 쿼리
+    @Query(value = "DELETE FROM talent_exchange_requests WHERE talent_id = :talentId", nativeQuery = true)
+    void deleteExchangeRequester(@Param("talentId") Long talentId);
+
 }

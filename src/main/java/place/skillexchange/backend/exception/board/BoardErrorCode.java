@@ -19,6 +19,7 @@ public enum BoardErrorCode implements BaseErrorCode {
     BOARD_NOT_FOUND(NOT_FOUND, "BOARD_404_1", "존재하지 않는 게시물 입니다."),
     @ExplainError("이미 스크랩한 게시물일 경우")
     ALREADY_SCRAPPED(NOT_FOUND, "BOARD_404_2", "이미 스크랩한 게시물 입니다."),
+    ALREADY_REQUESTSKILL(NOT_FOUND, "BOARD_404_3", "재능교환 요청이 된 게시물입니다"),
     @ExplainError("등록되지 않은 장소를 재능교환 게시물 장소로 등록하려고 하는 경우")
     PLACE_NOT_FOUND(NOT_FOUND, "PLACE_404_1", "해당 장소는 등록되지 않은 장소입니다."),
     @ExplainError("등록되지 않은 분야를 재능교환 게시물 분야로 등록하려고 하는 경우")

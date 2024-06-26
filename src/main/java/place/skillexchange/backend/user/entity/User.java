@@ -67,7 +67,7 @@ public class User implements UserDetails {
     /**
      * User와 File은 1:1 관계
      */
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private File file;
 
     /**
