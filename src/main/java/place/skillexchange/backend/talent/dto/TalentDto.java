@@ -178,6 +178,7 @@ public class TalentDto {
         private LocalDateTime regDate;
         private LocalDateTime modDate;
         private List<String> imgUrl = new ArrayList<>();
+        private ExchangeStatus exchangeStatus;
         private Long hit;
 
         /* Entity -> Dto */
@@ -207,14 +208,14 @@ public class TalentDto {
             this.selectedDays = DayOfWeekUtil.convertSelectedDaysToString(talent.getDayOfWeek());
             this.regDate = talent.getRegDate();
             this.modDate = talent.getModDate();
-            this.hit = talent.getHit();
-
             if (!talent.getFiles().isEmpty()) {
                 //자바8 람다식 + forEach 메서드
                 talent.getFiles().forEach(file -> this.imgUrl.add(file.getFileUrl()));
             } else {
                 this.imgUrl = null;
             }
+            this.exchangeStatus = talent.getExchangeStatus();
+            this.hit = talent.getHit();
         }
     }
 
