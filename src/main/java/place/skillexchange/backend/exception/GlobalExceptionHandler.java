@@ -46,7 +46,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .build()
                         .toUriString();
 
-        log.error("INTERNAL_SERVER_ERROR", ex);
+        //log.error("INTERNAL_SERVER_ERROR", ex);
         GlobalErrorCode internalServerError = GlobalErrorCode.INTERNAL_SERVER_ERROR;
         ErrorResponse errorResponse =
                 new ErrorResponse(
