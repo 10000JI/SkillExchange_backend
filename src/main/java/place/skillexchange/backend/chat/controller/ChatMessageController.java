@@ -26,12 +26,17 @@ public class ChatMessageController {
 
     @MessageMapping("chat.message")
     public void sendMessage(ChatDto.ChatMessageDto message) {
-        log.info("Message content: {}", message);
-
-        ChatMessage newChat = chatMessageService.createChatMessage(message);
-
-        template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + message.getRoomId(), newChat);
-
-        log.info("Message sent to RabbitMQ: {}", newChat);
+        try {
+            ChatMessage newChat = chatMessageService.createChatMessage(message);
+            if (newChat != null) {
+                template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + message.getRoomId(), newChat);
+                log.info("Message sent to RabbitMQ: {}", newChat);
+            } else {
+                log.error("Failed to create chat message. User might not be in the chat room. User: {}, Room: {}",
+                        message.getAuthorId(), message.getRoomId());
+            }
+        } catch (Exception e) {
+            log.error("Error processing message: ", e);
+        }
     }
 }

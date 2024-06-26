@@ -64,7 +64,7 @@ public class ChatDto {
             this.lastChatMesg = chatRoom.getLastChatMesg();
             this.chatRoomMembers = new HashSet<>(); // Initialize the Set
             for (User user : chatRoom.getChatRoomMembers()) {
-                log.error("userInfo:::{}", user);
+                //log.error("userInfo:::{}", user);
                 chatRoomMembers.add(new ChatUserInfoDto(user));
             }
             this.createdAt = chatRoom.getCreatedAt();
@@ -134,6 +134,24 @@ public class ChatDto {
         private int page;
         private int count;
         private String reqUserId;
-        private List<ChatRoomInfoResponse> chatRooms;
+        private List<ChatRoomList> chatRooms;
+    }
+
+    @Data
+    public static class ChatRoomList {
+        private String chatRoomId;
+        private ChatMessage lastChatMesg;
+        private String guestId;
+
+        public ChatRoomList(ChatRoom chatRoom, String userId) {
+            this.chatRoomId = chatRoom.getId();
+            this.lastChatMesg = chatRoom.getLastChatMesg();
+            for (User user : chatRoom.getChatRoomMembers()) {
+                if(!user.getId().equals(userId)){
+                    //log.error("userInfo:::{}", user);
+                    this.guestId = userId;
+                }
+            }
+        }
     }
 }

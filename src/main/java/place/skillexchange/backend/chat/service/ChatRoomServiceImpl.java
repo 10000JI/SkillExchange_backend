@@ -82,9 +82,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         String userId = securityUtil.getCurrentMemberUsername();
 
         List<ChatRoom> chatRooms = findChatRoomsWithPaging(page, size, userId);
-        List<ChatDto.ChatRoomInfoResponse> chatRoomInfo = new ArrayList<>();
+        List<ChatDto.ChatRoomList> chatRoomInfo = new ArrayList<>();
         for (ChatRoom chatRoom : chatRooms) {
-            chatRoomInfo.add(new ChatDto.ChatRoomInfoResponse(chatRoom));
+            chatRoomInfo.add(new ChatDto.ChatRoomList(chatRoom, userId));
         }
         ChatDto.ChatRoomListReponse info = ChatDto.ChatRoomListReponse.builder()
                 .page(page)

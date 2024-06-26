@@ -1,6 +1,7 @@
 package place.skillexchange.backend.chat.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import place.skillexchange.backend.chat.dto.ChatDto;
 import place.skillexchange.backend.chat.entity.ChatMessage;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatMessageServiceImpl implements ChatMessageService{
 
     private final ChatRoomRepository chatRoomRepository;
@@ -23,16 +25,18 @@ public class ChatMessageServiceImpl implements ChatMessageService{
     @Override
     public ChatMessage createChatMessage(ChatDto.ChatMessageDto chatMessageDto) {
 
-        ChatMessage chatMessage = chatMessageDto.toEntity();
-        ChatRoom chatRoom = chatRoomRepository.findById(chatMessage.getRoomId()).orElseThrow();
+        ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId())
+                .orElseThrow(() -> new RuntimeException("Chat room not found"));
 
         boolean exists = chatRoom.getChatRoomMembers().stream()
                 .anyMatch(member -> member.getUsername().equals(chatMessageDto.getAuthorId()));
 
         if (!exists) {
-            throw UserNotFoundException.EXCEPTION;
+            log.error("User not found in chat room: {}", chatMessageDto.getAuthorId());
+            return null;
         }
 
+        ChatMessage chatMessage = chatMessageDto.toEntity();
         chatRoom.setLastChatMesg(chatMessage);
         chatRoomRepository.save(chatRoom);
 
