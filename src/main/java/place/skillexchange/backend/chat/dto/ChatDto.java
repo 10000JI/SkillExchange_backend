@@ -147,9 +147,8 @@ public class ChatDto {
             this.chatRoomId = chatRoom.getId();
             this.lastChatMesg = chatRoom.getLastChatMesg();
             for (User user : chatRoom.getChatRoomMembers()) {
-                if(!user.getId().equals(userId)){
-                    //log.error("userInfo:::{}", user);
-                    this.guestId = userId;
+                if (!user.getId().equals(userId)) {
+                    this.guestId = user.getId();
                 }
             }
         }
