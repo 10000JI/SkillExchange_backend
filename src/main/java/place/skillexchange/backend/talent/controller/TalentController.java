@@ -114,8 +114,8 @@ public class TalentController {
      * 재능교환 요청 수락
      */
     @PostMapping("/talentExchange/{talentId}/approve")
-    public TalentDto.ResponseBasic talentExchangeApprove(@PathVariable Long talentId) {
-        return talentService.talentExchangeApprove(talentId);
+    public TalentDto.ResponseBasic talentExchangeApprove(@PathVariable Long talentId, @RequestBody TalentDto.ExchangeApproveRequest dto) {
+        return talentService.talentExchangeApprove(talentId,dto);
     }
 }
 

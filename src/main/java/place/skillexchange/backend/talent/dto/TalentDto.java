@@ -339,6 +339,7 @@ public class TalentDto {
         private Long maxAge;
         private String avatar;
         private LocalDateTime regDate;
+        private ExchangeStatus status;
         private Long hit;
         private Long commentCount; //댓글 개수 추가
 
@@ -354,6 +355,7 @@ public class TalentDto {
             this.maxAge = talent.getMaxAge();
             this.avatar = talent.getWriter().getFile() != null ? talent.getWriter().getFile().getFileUrl() : null; // null 체크 추가
             this.regDate = talent.getRegDate();
+            this.status = talent.getExchangeStatus();
             this.hit = talent.getHit();
             this.commentCount = commentCount;
         }
@@ -390,6 +392,14 @@ public class TalentDto {
             this.teachedSubject = talent.getTeachedSubject().getSubjectName();
             this.regDate = talent.getRegDate();
         }
+    }
+
+    /**
+     * 재능교환 수락 요청 dto
+     */
+    @Getter
+    public static class ExchangeApproveRequest {
+        private String guestId;
     }
 
 }

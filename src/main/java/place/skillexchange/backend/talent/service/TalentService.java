@@ -34,5 +34,5 @@ public interface TalentService {
 
     public  List<RequestSkillInfo> talentExchangeInfo();
 
-    public TalentDto.ResponseBasic talentExchangeApprove(Long talentId);
+    public TalentDto.ResponseBasic talentExchangeApprove(Long talentId, TalentDto.ExchangeApproveRequest dto);
 }

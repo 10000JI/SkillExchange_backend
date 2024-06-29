@@ -245,6 +245,9 @@ public class TalentServiceImpl implements TalentService {
             throw BoardAleadyRequestSkillException.EXCEPTION;
         }
         Talent talent = talentRepository.findById(talentId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
+        if (talent.getWriter().getId().equals(userId)) {
+            throw BoardSelfRequestSkillException.EXCEPTION;
+        }
         talent.addExchangeRequester(userRepository.findById(userId).orElseThrow(() -> UserNotFoundException.EXCEPTION));
         return new TalentDto.ResponseBasic(201,"재능교환 요청이 완료되었습니다");
     }
@@ -261,9 +264,9 @@ public class TalentServiceImpl implements TalentService {
     //재능교환 요청 수락
     @Override
     @Transactional
-    public TalentDto.ResponseBasic talentExchangeApprove(Long talentId) {
+    public TalentDto.ResponseBasic talentExchangeApprove(Long talentId, TalentDto.ExchangeApproveRequest dto) {
         String userId = securityUtil.getCurrentMemberUsername();
-        Talent talent = talentRepository.findRequestSkill(talentId, userId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
+        Talent talent = talentRepository.findRequestSkillApprove(talentId, dto.getGuestId(),userId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
         talent.completeExchange();
         talentRepository.deleteExchangeRequester(talentId);
         return new TalentDto.ResponseBasic(201,"재능교환 서비스가 매칭되었습니다.");

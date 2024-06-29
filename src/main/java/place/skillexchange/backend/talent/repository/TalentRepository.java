@@ -64,4 +64,8 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
     @Query(value = "DELETE FROM talent_exchange_requests WHERE talent_id = :talentId", nativeQuery = true)
     void deleteExchangeRequester(@Param("talentId") Long talentId);
 
+    @Query("SELECT t FROM Talent t " +
+            "JOIN t.exchangeRequesters ex " +
+            "WHERE t.id = :talentId AND ex.id = :guestId AND t.writer.id = :userId")
+    Optional<Talent> findRequestSkillApprove(@Param("talentId") Long talentId,@Param("guestId") String guestId, @Param("userId") String userId);
 }
