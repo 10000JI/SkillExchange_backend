@@ -104,7 +104,7 @@ public class Talent extends BaseEntity {
     private ExchangeStatus exchangeStatus = ExchangeStatus.PENDING;
 
     // 재능교환 요청은 다수가 될 수 있음
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinTable(
             name = "talent_exchange_requests",
             joinColumns = @JoinColumn(name = "talent_id"),

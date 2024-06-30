@@ -23,6 +23,8 @@ public enum BoardErrorCode implements BaseErrorCode {
     ALREADY_REQUESTSKILL(NOT_FOUND, "BOARD_404_3", "재능교환 요청이 된 게시물입니다"),
     @ExplainError("자기 자신에게 재능교환 요청을 보내려는 경우")
     SELF_REQUESTSKILL(NOT_FOUND, "BOARD_404_4", "자기 자신에게 재능교환 요청은 불가능합니다."),
+    @ExplainError("재능교환 요청 수락 파라미터가 잘못된 경우")
+    INVALID_REQUEST_SKILL(NOT_FOUND, "BOARD_404_5", "요청한 게시물 번호 또는 게스트 ID가 유효하지 않습니다."),
     @ExplainError("등록되지 않은 장소를 재능교환 게시물 장소로 등록하려고 하는 경우")
     PLACE_NOT_FOUND(NOT_FOUND, "PLACE_404_1", "해당 장소는 등록되지 않은 장소입니다."),
     @ExplainError("등록되지 않은 분야를 재능교환 게시물 분야로 등록하려고 하는 경우")

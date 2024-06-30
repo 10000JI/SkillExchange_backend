@@ -266,7 +266,7 @@ public class TalentServiceImpl implements TalentService {
     @Transactional
     public TalentDto.ResponseBasic talentExchangeApprove(Long talentId, TalentDto.ExchangeApproveRequest dto) {
         String userId = securityUtil.getCurrentMemberUsername();
-        Talent talent = talentRepository.findRequestSkillApprove(talentId, dto.getGuestId(),userId).orElseThrow(() -> BoardNotFoundException.EXCEPTION);
+        Talent talent = talentRepository.findRequestSkillApprove(talentId, dto.getGuestId(),userId).orElseThrow(() -> BoardInvalidfRequestSkillException.EXCEPTION);
         talent.completeExchange();
         talentRepository.deleteExchangeRequester(talentId);
         return new TalentDto.ResponseBasic(201,"재능교환 서비스가 매칭되었습니다.");

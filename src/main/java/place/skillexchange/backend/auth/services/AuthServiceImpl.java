@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.client.RestTemplate;
+import place.skillexchange.backend.chat.repository.ChatMessageRepository;
+import place.skillexchange.backend.chat.repository.ChatRoomRepository;
 import place.skillexchange.backend.comment.entity.Comment;
 import place.skillexchange.backend.comment.repository.CommentRepository;
 import place.skillexchange.backend.common.util.RedisUtil;
@@ -64,6 +66,9 @@ public class AuthServiceImpl implements AuthService{
     private final TalentRepository talentRepository;
     private final CommentRepository commentRepository;
     private final FileRepository fileRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
+
 
     /* 회원가입 ~ 로그인 까지 (JWT 생성) */
 
@@ -305,6 +310,19 @@ public class AuthServiceImpl implements AuthService{
         // 사용자가 작성한 댓글은 null로 변경 (재능교환 게시물은 삭제하나 댓글은 삭제하지 않음)
         commentRepository.nullifyWriterByUserId(id);
 
+        // 채팅방Id List로 반환
+        List<String> roomIds = chatRoomRepository.findChatRoomIdsByUserId(id);
+
+        if (roomIds != null && !roomIds.isEmpty()) {
+            // 채팅방 lastMessage null로 변경
+            chatRoomRepository.setLastChatMessageToNullByRoomIds(roomIds);
+            // 채팅방 메세지 제거
+            chatMessageRepository.deleteByRoomIdIn(roomIds);
+            // 채팅방의 모든 멤버 제거
+            chatRoomRepository.removeAllMembersFromChatRooms(roomIds);
+            // 채팅방 제거
+            chatRoomRepository.deleteByIdIn(roomIds);
+        }
         userRepository.deleteById(id);
 
         return new UserDto.ResponseBasic(200, "회원 탈퇴가 정상적으로 처리되었습니다.");
