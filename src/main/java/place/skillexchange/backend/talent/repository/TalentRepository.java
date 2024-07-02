@@ -54,7 +54,7 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
             "WHERE t.id = :talentId AND ex.id = :userId")
     Optional<Talent> findRequestSkill(@Param("talentId") Long talentId, @Param("userId") String userId);
 
-    @Query("SELECT new place.skillexchange.backend.talent.dto.RequestSkillInfo(t.id, er.id) " +
+    @Query("SELECT new place.skillexchange.backend.talent.dto.RequestSkillInfo(t.id, er.id, t.teachedSubject.subjectName, t.teachingSubject.subjectName, t.title) " +
             "FROM Talent t JOIN t.exchangeRequesters er " +
             "WHERE t.writer = :user")
     List<RequestSkillInfo> findExchangeRequestInfoByWriter(@Param("user") User user);
@@ -64,8 +64,13 @@ public interface TalentRepository extends JpaRepository<Talent, Long>, CustomTal
     @Query(value = "DELETE FROM talent_exchange_requests WHERE talent_id = :talentId", nativeQuery = true)
     void deleteExchangeRequester(@Param("talentId") Long talentId);
 
+
     @Query("SELECT t FROM Talent t " +
             "JOIN t.exchangeRequesters ex " +
             "WHERE t.id = :talentId AND ex.id = :guestId AND t.writer.id = :userId")
     Optional<Talent> findRequestSkillApprove(@Param("talentId") Long talentId,@Param("guestId") String guestId, @Param("userId") String userId);
+
+    @Modifying //네이티브 쿼리
+    @Query(value = "DELETE FROM talent_exchange_requests WHERE requester_id =:userId", nativeQuery = true)
+    void deleteByExchangeRequesters(@Param("userId") String userId);
 }

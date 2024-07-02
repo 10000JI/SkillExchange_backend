@@ -148,8 +148,5 @@ public class Talent extends BaseEntity {
             this.exchangeStatus = ExchangeStatus.REQUESTED;
         }
     }
-    public void completeExchange() {
-        this.exchangeStatus = ExchangeStatus.COMPLETED;
-    }
 }
 

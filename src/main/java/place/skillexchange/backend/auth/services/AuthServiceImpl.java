@@ -323,6 +323,9 @@ public class AuthServiceImpl implements AuthService{
             // 채팅방 제거
             chatRoomRepository.deleteByIdIn(roomIds);
         }
+
+        talentRepository.deleteByExchangeRequesters(id);
+
         userRepository.deleteById(id);
 
         return new UserDto.ResponseBasic(200, "회원 탈퇴가 정상적으로 처리되었습니다.");
