@@ -11,14 +11,20 @@
 
 </div>
 </div>
+<br>
 
 ## 📆 개발기간
 - 2024년 02월 01일 ~ 2024년 07월 02일
 
+<br>
+
 ## ✨ 서비스 소개
 사용자들이 서로의 재능을 교환할 수 있는 온라인 플랫폼입니다. <br>
-사용자들은 다양한 카테고리에서 재능 교환 게시물을 작성하고, 매칭 서비스를 통해 적합한 파트너를 찾을 수 있습니다. <br>
+사용자들은 다양한 카테고리에서 재능 교환 게시물을 작성합니다. <br>
+작성된 게시물을 토대로 매칭 서비스를 통해 적합한 파트너를 찾을 수 있습니다. <br>
 관심 있는 상대와 실시간 채팅으로 소통하며, 자발적인 지식과 기술 공유를 촉진합니다.
+
+<br>
 
 ## 🛠️ 개발 환경
 #### &nbsp;　[ DB ]
@@ -52,9 +58,13 @@
 &nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/Apache JMeter-D22128?style=flat&logo=apache-jmeter&logoColor=white"/>
 &nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=postman&logoColor=white"/><br>
 
+<br>
+
 ## 🚀 CI/CD 아키텍처
 
 <img src="./img/CICD 아키텍처.png" width="80%">
+
+<br>
 
 ## 📺 API 명세서
 
@@ -62,8 +72,12 @@
 
 https://documenter.getpostman.com/view/29789417/2sA35EaNyR
 
+<br>
+
 ## 📝 DB구조도
 <img src="./img/ERD_재능교환소.png" width="80%">
+
+<br>
 
 ## 💻 기능정리
 1. 회원 (일반회원 & OAuth2.0)
