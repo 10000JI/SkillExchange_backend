@@ -62,20 +62,20 @@
 
 ## 🚀 CI/CD 아키텍처
 
-<img src="./img/CICD 아키텍처.png" width="80%">
+<img src="./img/CICD 아키텍처.png">
 
 <br>
 
 ## 📺 API 명세서
 
-<img src="./img/API명세서.png" width="80%">
+<img src="./img/API명세서.png">
 
 https://documenter.getpostman.com/view/29789417/2sA35EaNyR
 
 <br>
 
 ## 📝 DB구조도
-<img src="./img/ERD_재능교환소.png" width="80%">
+<img src="./img/ERD_재능교환소.png">
 
 <br>
 
