@@ -32,7 +32,7 @@
 &nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/Redis-DC382D?style=flat&logo=Redis&logoColor=white"/>
 
 #### &nbsp;　[ Backend ]
-&nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/Java-007396?style=flat&logo=java&logoColor=white"/>
+&nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/Java17-007396?style=flat&logo=java&logoColor=white"/>
 &nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=flat&logo=springBoot&logoColor=white"/>
 &nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/Spring Security-6DB33F?style=flat&logo=springsecurity&logoColor=white"/>
 &nbsp;&nbsp;&nbsp;<img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=flat&logo=spring&logoColor=white"/>
