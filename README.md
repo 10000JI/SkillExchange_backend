@@ -75,7 +75,7 @@ https://documenter.getpostman.com/view/29789417/2sA35EaNyR
 <br>
 
 ## 📝 DB구조도
-<img src="./img/ERD_재능교환소.png">
+<img src="./img/ERD.png">
 
 <br>
 
